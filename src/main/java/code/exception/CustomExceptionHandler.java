@@ -1,0 +1,117 @@
+package code.exception;
+
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
+
+import java.util.List;
+import java.util.Locale;
+
+@RestControllerAdvice
+public class CustomExceptionHandler {
+
+  @Qualifier("messageSource")
+  @Autowired
+  private MessageSource msgSource;
+
+  @ExceptionHandler(InternalServerException.class)
+  public ResponseEntity<Object> handlerInternalServerException(InternalServerException ex, WebRequest request) {
+    //Log error
+    ErrorResponse error = new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+    return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+  }
+
+  @ExceptionHandler(ConflictException.class)
+  public ResponseEntity<Object> handlerConflictException(ConflictException ex, WebRequest request) {
+    ErrorResponse error = new ErrorResponse(HttpStatus.CONFLICT, ex.getMessage());
+    return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+  }
+
+  @ExceptionHandler(ForbiddenException.class)
+  public ResponseEntity<Object> handlerForbiddenException(ForbiddenException ex, WebRequest request) {
+    ErrorResponse error = new ErrorResponse(HttpStatus.FORBIDDEN, ex.getMessage());
+    return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
+  }
+
+  @ExceptionHandler(NotFoundException.class)
+  public ResponseEntity<Object> handlerNotFoundException(NotFoundException ex, WebRequest request) {
+    ErrorResponse error = new ErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
+    return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+  }
+
+  @ExceptionHandler(BadRequestException.class)
+  public ResponseEntity<Object> handlerBadRequestException(BadRequestException ex, WebRequest request) {
+    ErrorResponse error = new ErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+  }
+
+  //Xử lý các exception chưa được khai báo
+  @ExceptionHandler(Exception.class)
+  public ResponseEntity<Object> handlerException(Exception ex, WebRequest request) {
+    ErrorResponse error = new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+    return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+  }
+
+//  Dev
+  @ExceptionHandler(MethodArgumentNotValidException.class)
+  public ResponseEntity<Object> processValidateError(MethodArgumentNotValidException ex) {
+    BindingResult result = ex.getBindingResult();
+    List<FieldError> fieldErrors = result.getFieldErrors();
+    String message = "";
+    for (FieldError error : fieldErrors) {
+      String temp = processFieldError(error);
+      message += temp + " ; ";
+    }
+    ErrorResponse error = new ErrorResponse(HttpStatus.BAD_REQUEST, message);
+    return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+  }
+
+  private String processFieldError(FieldError error) {
+    String msg = "";
+    if (error != null) {
+      Locale currentLocale = LocaleContextHolder.getLocale();
+      try {
+        msg = msgSource.getMessage(error.getDefaultMessage(), null, currentLocale);
+      } catch (Exception e) {
+        msg = error.getDefaultMessage();
+      }
+    }
+    return msg;
+  }
+
+// Run
+
+//  @ExceptionHandler(ConstraintViolationException.class)
+//  @ResponseStatus(HttpStatus.BAD_REQUEST)
+//  public ResponseEntity<Object> handleConstraintViolationException(ConstraintViolationException ex) {
+//    // Lấy tất cả thông báo lỗi từ các ConstraintViolation
+//    Set<ConstraintViolation<?>> violations = ex.getConstraintViolations();
+//
+//    // Tạo thông báo lỗi ngắn gọn, nối tất cả thông báo lỗi thành chuỗi đơn giản
+//    String message = violations.stream()
+//        .map(ConstraintViolation::getMessage)
+//        .collect(Collectors.joining("; "));
+//
+//    // Tạo response chỉ chứa message lỗi và status code
+//    return new ResponseEntity<>(Map.of(
+//        "status", HttpStatus.BAD_REQUEST.name(),
+//        "message", message
+//    ), HttpStatus.BAD_REQUEST);
+//  }
+}
