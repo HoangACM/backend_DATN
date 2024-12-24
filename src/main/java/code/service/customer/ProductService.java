@@ -56,8 +56,11 @@ public class ProductService {
 
 //      Tính số sao đánh giá
 
+<<<<<<< HEAD
       productDTO.setImage(product.getImages());
       productDTO.setThumbnail(product.getThumbnail());
+=======
+>>>>>>> e95ac2416cb78d52425e90160251882723f7602a
       productDTOs.add(productDTO);
     }
     return productDTOs;
