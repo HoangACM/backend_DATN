@@ -1,4 +1,4 @@
-package code.Clouldinary;
+package code.clouldinary;
 
 import com.cloudinary.Cloudinary;
 import org.springframework.beans.factory.annotation.Value;

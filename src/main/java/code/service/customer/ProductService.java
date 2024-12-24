@@ -38,8 +38,10 @@ public class ProductService {
     List<ProductDTO> productDTOs = new ArrayList<>();
     for (Product product : products) {
       ProductDTO productDTO = new ProductDTO();
-      BeanUtils.copyProperties(product, productDTO);
+      productDTO.setProduct(product);
       productDTO.setCategory(product.getCategory());
+      productDTO.setCategory(product.getCategory());
+
 //     set giá thuê min-max
       for (ProductDetail productDetail : product.getProductDetails()) {
         if (productDTO.getMaxPrice() < productDetail.getPrice()) {
@@ -55,10 +57,6 @@ public class ProductService {
 //      Tính số lượt đã thuê
 
 //      Tính số sao đánh giá
-
-
-      productDTO.setImage(product.getImages());
-      productDTO.setThumbnail(product.getThumbnail());
 
       productDTOs.add(productDTO);
     }
