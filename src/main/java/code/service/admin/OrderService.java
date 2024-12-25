@@ -44,13 +44,13 @@ public class OrderService {
   }
 
   //  Lấy các đơn hàng theo thời gian
-//  public Page<OrderDetail> getOrderDetailsByTime(int page, int size, LocalDateTime startDate,
-//      LocalDateTime endDate) {
-//    Pageable pageable = PageRequest.of(page, size);
-//
-//    // Gọi repository với bộ lọc theo thời gian
-//    return orderDetailRepository.findByOrderDateBetween(startDate, endDate, pageable);
-//  }
+  public Page<OrderDetail> getOrderDetailsByTime(int page, int size, LocalDateTime startDate,
+      LocalDateTime endDate) {
+    Pageable pageable = PageRequest.of(page, size);
+
+    // Gọi repository với bộ lọc theo thời gian
+    return orderDetailRepository.findByCreatedAtBetween(startDate, endDate, pageable);
+  }
 
   //  Lấy đơn hàng theo id
   public Object getOrderDetailById(long orderDetailId) {

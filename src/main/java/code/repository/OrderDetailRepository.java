@@ -39,5 +39,7 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, Long> 
 
   List<OrderDetail> findByOrder(Order order);
 
-
+  @Query("SELECT o FROM OrderDetail o WHERE o.createdAt BETWEEN :startDate AND :endDate")
+  Page<OrderDetail> findByCreatedAtBetween(LocalDateTime startDate, LocalDateTime endDate,
+      Pageable pageable);
 }

@@ -89,13 +89,14 @@ public class OrderController {
       @PathVariable long orderReturnId) {
     return ResponseEntity.ok(orderService.getOrderReturnById(orderReturnId));
   }
-//  Lọc đơn hàng theo thời gian
-//@GetMapping("/orders")
-//public ResponseEntity<?> getOrdersByTime(
-//    @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
-//    @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
-//    @RequestParam(defaultValue = "0") int page,
-//    @RequestParam(defaultValue = "10") int size) {
-//  return ResponseEntity.ok(orderService.getOrderDetails(page, size));
-//}
+
+  //  Lọc đơn hàng theo thời gian
+  @GetMapping("/orders/")
+  public ResponseEntity<?> getOrdersByTime(
+      @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+      @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size) {
+    return ResponseEntity.ok(orderService.getOrderDetails(page, size));
+  }
 }

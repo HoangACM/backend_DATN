@@ -58,6 +58,14 @@ public class StatController {
   public ResponseEntity<?> statRevenueByYear(@RequestParam int year) {
     return ResponseEntity.ok(statService.statByMonths(year));
   }
-//  Thống kê doanh thu theo danh mục
 
+  //  Thống kê doanh thu theo danh mục
+  @GetMapping("/stat/categories/{categoryId}/revenue")
+  public ResponseEntity<?> statRevenueByYearAndCategory(
+      @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+      @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
+      @PathVariable long categoryId) {
+    return ResponseEntity.ok(
+        statService.statRevenueByCategoryIdAndYear(categoryId, startDate, endDate));
+  }
 }

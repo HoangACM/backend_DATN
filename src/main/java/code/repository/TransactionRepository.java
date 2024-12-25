@@ -9,8 +9,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface TransactionRepository extends JpaRepository<Transaction,Long> {
-  Page<Transaction> findByTransactionDateBetween(LocalDateTime startDate, LocalDateTime endDate, Pageable pageable);
+public interface TransactionRepository extends JpaRepository<Transaction, Long> {
+
+  Page<Transaction> findByTransactionDateBetween(LocalDateTime startDate, LocalDateTime endDate,
+      Pageable pageable);
 
   @Query("SELECT SUM(t.transferAmount) " +
       "FROM Transaction t " +
@@ -20,4 +22,17 @@ public interface TransactionRepository extends JpaRepository<Transaction,Long> {
   Long getTotalAmountByMonthYearAndX(@Param("month") int month,
       @Param("year") int year,
       @Param("x") int x);
+
+  @Query("SELECT SUM(t.transferAmount) FROM Transaction t " +
+      "JOIN Order o ON o.id = CAST(SUBSTRING(t.content, " +
+      "LOCATE('DH', t.content) + 2, LENGTH(t.content)) AS LONG) " + // Trích xuất orderId từ content
+      "JOIN o.orderDetails od " +
+      "JOIN od.productDetail pd " +
+      "JOIN pd.product p " +
+      "JOIN p.category c " +
+      "WHERE c.id = :categoryId " +
+      "AND t.transactionDate BETWEEN :startDate AND :endDate")
+  Long findTotalTransferAmountByCategoryAndDateRange(
+      Long categoryId, LocalDateTime startDate, LocalDateTime endDate);
+
 }
