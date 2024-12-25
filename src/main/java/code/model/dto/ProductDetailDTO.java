@@ -1,5 +1,6 @@
 package code.model.dto;
 
+import code.model.entity.Product;
 import code.model.entity.ProductDetail;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Column;
@@ -14,7 +15,7 @@ import lombok.Setter;
 @Setter
 @Getter
 public class ProductDetailDTO {
-  private ProductDTO productDTO;
+  private Product product;
   @JsonIgnoreProperties({"createdAt", "updatedAt"})
   private List<ProductDetail> productDetails;
 }

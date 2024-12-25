@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import lombok.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Entity
 @Table(name="transactions")
@@ -54,17 +56,56 @@ public class Transaction {
 
   @JsonIgnore
   public long getCustomerId(){
-    String[] parts = this.content.split("_", 4);
-    return Long.parseLong(parts[2]);
+    String regex = "SEVQR(\\d+)KH(\\d+)DH(\\d+)";
+    Pattern pattern = Pattern.compile(regex);
+    Matcher matcher = pattern.matcher(this.content);
+    String maType = "";
+    String maKH = "";
+    String maDH = "";
+    // Kiểm tra và lấy kết quả
+    if (matcher.find()) {
+      maType = matcher.group(1);
+      maKH = matcher.group(2); // Mã khách hàng
+      maDH = matcher.group(3); // Mã đơn hàng
+    } else {
+      System.out.println("Không tìm thấy mã khách hàng và đơn hàng trong chuỗi.");
+    }
+    return Long.parseLong(maKH);
   }
   @JsonIgnore
   public long getTypePayment(){
-    String[] parts = this.content.split("_", 4);
-    return Long.parseLong(parts[1]);
+    String regex = "SEVQR(\\d+)KH(\\d+)DH(\\d+)";
+    Pattern pattern = Pattern.compile(regex);
+    Matcher matcher = pattern.matcher(this.content);
+    String maType = "";
+    String maKH = "";
+    String maDH = "";
+    // Kiểm tra và lấy kết quả
+    if (matcher.find()) {
+      maType = matcher.group(1);
+      maKH = matcher.group(2); // Mã khách hàng
+      maDH = matcher.group(3); // Mã đơn hàng
+    } else {
+      System.out.println("Không tìm thấy mã khách hàng và đơn hàng trong chuỗi.");
+    }
+    return Long.parseLong(maType);
   }
   @JsonIgnore
   public long getOrderId(){
-    String[] parts = this.content.split("_", 4);
-    return Long.parseLong(parts[3]);
+    String regex = "SEVQR(\\d+)KH(\\d+)DH(\\d+)";
+    Pattern pattern = Pattern.compile(regex);
+    Matcher matcher = pattern.matcher(this.content);
+    String maType = "";
+    String maKH = "";
+    String maDH = "";
+    // Kiểm tra và lấy kết quả
+    if (matcher.find()) {
+      maType = matcher.group(1);
+      maKH = matcher.group(2); // Mã khách hàng
+      maDH = matcher.group(3); // Mã đơn hàng
+    } else {
+      System.out.println("Không tìm thấy mã khách hàng và đơn hàng trong chuỗi.");
+    }
+    return Long.parseLong(maDH);
   }
 }

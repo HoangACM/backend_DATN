@@ -82,7 +82,7 @@ public class OrderService {
         throw new BadRequestException("Không thể chuyển trạng thái");
       }
     }
-//  Xác nhận đã giao đến nơi + Tạo trạng thái trả hàng : OrderReturn
+//  Xác nhận đã giao đến nơi
     if (status == 4) {
       if (orderDetail.getStatus() == 3) {
         orderDetail.setStatus(4);

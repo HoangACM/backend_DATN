@@ -39,7 +39,7 @@ public class ProductService {
     for (Product product : products) {
       ProductDTO productDTO = new ProductDTO();
       productDTO.setProduct(product);
-      productDTO.setCategory(product.getCategory());
+      System.out.println("da co"+productDTO.getProduct().getId());
       productDTO.setCategory(product.getCategory());
 
 //     set giá thuê min-max
@@ -128,10 +128,8 @@ public class ProductService {
   public ProductDetailDTO getProductDTOByProductId(long productId) {
     Product product = productRepository.findById(productId)
         .orElseThrow(() -> new NotFoundException("Không thấy Product có id : " + productId));
-    ProductDTO productDTO = new ProductDTO();
-    BeanUtils.copyProperties(product, productDTO);
     ProductDetailDTO productDetailDTO = new ProductDetailDTO();
-    productDetailDTO.setProductDTO(productDTO);
+    productDetailDTO.setProduct(product);
     productDetailDTO.setProductDetails(productDetailRepository.findByProductId(productId));
     return productDetailDTO;
   }
@@ -177,10 +175,8 @@ public class ProductService {
 public ProductDetailDTO getProductDTOBySlug(String slug) {
   Product product = productRepository.findBySlug(slug)
       .orElseThrow(() -> new NotFoundException("Không thấy Product có slug : " + slug));
-  ProductDTO productDTO = new ProductDTO();
-  BeanUtils.copyProperties(product, productDTO);
   ProductDetailDTO productDetailDTO = new ProductDetailDTO();
-  productDetailDTO.setProductDTO(productDTO);
+  productDetailDTO.setProduct(product);
   productDetailDTO.setProductDetails(productDetailRepository.findByProductId(product.getId()));
   return productDetailDTO;
 }

@@ -13,6 +13,8 @@ import code.repository.TransactionRepository;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
@@ -45,16 +47,18 @@ public class TransactionService {
     transactionRepository.save(transaction);
 //    Thay doi trang thai đơn hàng : 1 -> 2
 //    Lay thong tin tu noi dung chuyen khoan
-//    Thanh toan don hang(*******SEVQR_01_makhachhang_madonhang)
+//    Thanh toan don hang(*******SEVQRKH****DH***)
 //    Nop phu phi qua han, mat, hong san pham(*******SEVQR_02_makhachhang_madonhang)
 
-    String content = request.getContent();
-    String[] parts = content.split("_", 4);
-    long typePayment = Long.parseLong(parts[1]);
+    String regex = "SEVQR(\\d+)KH(\\d+)DH(\\d+)";
+    Pattern pattern = Pattern.compile(regex);
+    Matcher matcher = pattern.matcher(transaction.getContent());
+
+    long typePayment = Long.parseLong(matcher.group(1));
 //    Neu ma la ******SEVQR_01_****** thi la chuyen khoan thanh toan don hang
     if(typePayment == 1){
-      long customerId = Long.parseLong(parts[2]);
-      long orderId = Long.parseLong(parts[3]);
+      long customerId = Long.parseLong(matcher.group(2));
+      long orderId = Long.parseLong(matcher.group(3));
       Order order = orderRepository.findById(orderId)
           .orElseThrow(() -> new NotFoundException("Không tìm thấy Order có id : " + orderId));
       List<OrderDetail> orderDetails = orderDetailRepository.findByOrder(order);
@@ -75,8 +79,8 @@ public class TransactionService {
     }
 //    Neu ma la ******SEVQR_02_***** thi la thanh toan phu phi
     if(typePayment == 2){
-      long customerId = Long.parseLong(parts[2]);
-      long orderDetailId = Long.parseLong(parts[3]);
+      long customerId = Long.parseLong(matcher.group(2));
+      long orderDetailId = Long.parseLong(matcher.group(3));
       OrderDetail orderDetail = orderDetailRepository.findById(orderDetailId)
           .orElseThrow(() -> new NotFoundException("Không tìm thấy OrderDetail có id : " + orderDetailId));
       orderDetail.setStatus(8);

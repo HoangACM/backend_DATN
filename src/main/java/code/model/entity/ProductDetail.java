@@ -12,7 +12,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
 @Table(name = "product_details", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"type", "color","product_condition"})})
+    @UniqueConstraint(columnNames = {"type", "color"})})
 @AllArgsConstructor
 @NoArgsConstructor
 @Setter
@@ -32,6 +32,9 @@ public class ProductDetail {
   //  giá thuê chung
   @Column(name = "price", nullable = false)
   private long price;
+
+  @Column(name = "deposit", nullable = false)
+  private long deposit = 0;
 
   @Column(name = "product_condition", nullable = false)
   private String condition;
