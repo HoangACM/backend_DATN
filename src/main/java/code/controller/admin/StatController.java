@@ -52,9 +52,12 @@ public class StatController {
     return ResponseEntity.ok(
         statService.statOverall());
   }
-// Thống kê doanh thu của 12 tháng theo năm
-@GetMapping("/stat/revenue")
-public ResponseEntity<?> statRevenueByYear(@RequestParam int year) {
-  return ResponseEntity.ok(statService.statByMonths(year));
-}
+
+  // Thống kê doanh thu của 12 tháng theo năm
+  @GetMapping("/stat/revenue")
+  public ResponseEntity<?> statRevenueByYear(@RequestParam int year) {
+    return ResponseEntity.ok(statService.statByMonths(year));
+  }
+//  Thống kê doanh thu theo danh mục
+
 }

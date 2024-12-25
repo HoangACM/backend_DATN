@@ -8,7 +8,9 @@ import code.model.more.Notification;
 import code.model.request.CreateOrderReturnRequest;
 import code.service.admin.OrderService;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import java.time.LocalDateTime;
 import java.util.Map;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -50,15 +52,15 @@ public class OrderController {
 
 //    Don hang tu trang thai 2 len 3 ; dang VC
     if (status == 3) {
-      webSocketController.deliverOrderDetail(notification.getUserReceiveId(),notification);
+      webSocketController.deliverOrderDetail(notification.getUserReceiveId(), notification);
     }
-    if(status == 4){
-      webSocketController.reserveOrderDetail(notification.getUserReceiveId(),notification);
+    if (status == 4) {
+      webSocketController.reserveOrderDetail(notification.getUserReceiveId(), notification);
     }
     return ResponseEntity.ok(orderDetail);
   }
 
-// Tạo OrderReturn
+  // Tạo OrderReturn
   @PostMapping("/orders/{orderDetailId}/return")
   public ResponseEntity<?> createOrderReturn(@PathVariable long orderDetailId,
       @RequestBody CreateOrderReturnRequest request) {
@@ -73,5 +75,27 @@ public class OrderController {
     return ResponseEntity.ok(orderReturn);
   }
 
+  //  Xem các orderReturn
+  @GetMapping("/order_returns")
+  public ResponseEntity<?> getOrderReturns(
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size) {
+    return ResponseEntity.ok(orderService.getOrderReturns(page, size));
+  }
 
+  // xem orderReturn theo id
+  @GetMapping("/order_returns/{orderReturnId}")
+  public ResponseEntity<?> getOrderReturnById(
+      @PathVariable long orderReturnId) {
+    return ResponseEntity.ok(orderService.getOrderReturnById(orderReturnId));
+  }
+//  Lọc đơn hàng theo thời gian
+//@GetMapping("/orders")
+//public ResponseEntity<?> getOrdersByTime(
+//    @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+//    @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
+//    @RequestParam(defaultValue = "0") int page,
+//    @RequestParam(defaultValue = "10") int size) {
+//  return ResponseEntity.ok(orderService.getOrderDetails(page, size));
+//}
 }

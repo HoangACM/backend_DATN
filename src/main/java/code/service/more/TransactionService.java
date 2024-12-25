@@ -49,51 +49,55 @@ public class TransactionService {
 //    Lay thong tin tu noi dung chuyen khoan
 //    Thanh toan don hang(*******SEVQRKH****DH***)
 //    Nop phu phi qua han, mat, hong san pham(*******SEVQR_02_makhachhang_madonhang)
-
+    System.out.println(transaction.getContent());
     String regex = "SEVQR(\\d+)KH(\\d+)DH(\\d+)";
     Pattern pattern = Pattern.compile(regex);
     Matcher matcher = pattern.matcher(transaction.getContent());
 
-    long typePayment = Long.parseLong(matcher.group(1));
+    if (matcher.find()) {
+      long typePayment = Long.parseLong(matcher.group(1));
 //    Neu ma la ******SEVQR_01_****** thi la chuyen khoan thanh toan don hang
-    if(typePayment == 1){
-      long customerId = Long.parseLong(matcher.group(2));
-      long orderId = Long.parseLong(matcher.group(3));
-      Order order = orderRepository.findById(orderId)
-          .orElseThrow(() -> new NotFoundException("Không tìm thấy Order có id : " + orderId));
-      List<OrderDetail> orderDetails = orderDetailRepository.findByOrder(order);
-      for(OrderDetail orderDetail : orderDetails){
-        orderDetail.setStatus(2);
-        orderDetailRepository.save(orderDetail);
-      }
-      notification.setOrderId(orderId);
-      notification.setRoleReceive("admin");
-      notification.setContent("Đơn hàng "+orderId+" đã được khách hàng thanh toán");
-      notification.setUserReceiveId(0);
-      notification.setStatus(false);
-      notificationRepository.save(notification);
-      map.put("notification",notification);
-      map.put("transaction",transaction);
-      return map;
+      if(typePayment == 1){
+        long customerId = Long.parseLong(matcher.group(2));
+        long orderId = Long.parseLong(matcher.group(3));
+        Order order = orderRepository.findById(orderId)
+            .orElseThrow(() -> new NotFoundException("Không tìm thấy Order có id : " + orderId));
+        List<OrderDetail> orderDetails = orderDetailRepository.findByOrder(order);
+        for(OrderDetail orderDetail : orderDetails){
+          orderDetail.setStatus(2);
+          orderDetailRepository.save(orderDetail);
+        }
+        notification.setOrderId(orderId);
+        notification.setRoleReceive("admin");
+        notification.setContent("Đơn hàng "+orderId+" đã được khách hàng thanh toán");
+        notification.setUserReceiveId(0);
+        notification.setStatus(false);
+        notificationRepository.save(notification);
+        map.put("notification",notification);
+        map.put("transaction",transaction);
+        return map;
 
-    }
+      }
 //    Neu ma la ******SEVQR_02_***** thi la thanh toan phu phi
-    if(typePayment == 2){
-      long customerId = Long.parseLong(matcher.group(2));
-      long orderDetailId = Long.parseLong(matcher.group(3));
-      OrderDetail orderDetail = orderDetailRepository.findById(orderDetailId)
-          .orElseThrow(() -> new NotFoundException("Không tìm thấy OrderDetail có id : " + orderDetailId));
-      orderDetail.setStatus(8);
-      orderDetailRepository.save(orderDetail);
-      notification.setOrderId(orderDetailId);
-      notification.setRoleReceive("admin");
-      notification.setContent("Đơn hàng "+orderDetailId+" đã được khách hàng thanh toán phụ phí");
-      notification.setUserReceiveId(0);
-      notification.setStatus(false);
-      notificationRepository.save(notification);
-      map.put("notification",notification);
-      map.put("transaction",transaction);
-      return map;
+      if(typePayment == 2){
+        long customerId = Long.parseLong(matcher.group(2));
+        long orderDetailId = Long.parseLong(matcher.group(3));
+        OrderDetail orderDetail = orderDetailRepository.findById(orderDetailId)
+            .orElseThrow(() -> new NotFoundException("Không tìm thấy OrderDetail có id : " + orderDetailId));
+        orderDetail.setStatus(8);
+        orderDetailRepository.save(orderDetail);
+        notification.setOrderId(orderDetailId);
+        notification.setRoleReceive("admin");
+        notification.setContent("Đơn hàng "+orderDetailId+" đã được khách hàng thanh toán phụ phí");
+        notification.setUserReceiveId(0);
+        notification.setStatus(false);
+        notificationRepository.save(notification);
+        map.put("notification",notification);
+        map.put("transaction",transaction);
+        return map;
+      }
+    } else {
+      System.out.println("No match found");
     }
     return null;
   }

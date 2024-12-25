@@ -6,6 +6,7 @@ import code.model.entity.*;
 import code.model.more.Notification;
 import code.model.request.CreateOrderReturnRequest;
 import code.repository.*;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.beans.BeanUtils;
@@ -42,6 +43,15 @@ public class OrderService {
     return orderDetailRepository.findAll(pageable);
   }
 
+  //  Lấy các đơn hàng theo thời gian
+//  public Page<OrderDetail> getOrderDetailsByTime(int page, int size, LocalDateTime startDate,
+//      LocalDateTime endDate) {
+//    Pageable pageable = PageRequest.of(page, size);
+//
+//    // Gọi repository với bộ lọc theo thời gian
+//    return orderDetailRepository.findByOrderDateBetween(startDate, endDate, pageable);
+//  }
+
   //  Lấy đơn hàng theo id
   public Object getOrderDetailById(long orderDetailId) {
     OrderDetail orderDetail = orderDetailRepository.findById(orderDetailId)
@@ -74,7 +84,7 @@ public class OrderService {
         productDetailRepository.save(productDetail);
         notification.setOrderId(orderDetailId);
         notification.setRoleReceive("customer");
-        notification.setContent("Đơn hàng "+orderDetailId+" đang được vận chuyển");
+        notification.setContent("Đơn hàng " + orderDetailId + " đang được vận chuyển");
         notification.setUserReceiveId(orderDetail.getOrder().getUser().getId());
         notification.setStatus(false);
         notificationRepository.save(notification);
@@ -89,7 +99,7 @@ public class OrderService {
         orderDetailRepository.save(orderDetail);
         notification.setOrderId(orderDetailId);
         notification.setRoleReceive("customer");
-        notification.setContent("Đơn hàng "+orderDetailId+" đã giao cho bạn");
+        notification.setContent("Đơn hàng " + orderDetailId + " đã giao cho bạn");
         notification.setUserReceiveId(orderDetail.getOrder().getUser().getId());
         notification.setStatus(false);
         notificationRepository.save(notification);
@@ -117,51 +127,64 @@ public class OrderService {
     return response;
   }
 
-//  Chuyển trạng thái OrderDetail từ 6->7
-  public Map<String, Object> createOrderReturn(long orderDetailId, CreateOrderReturnRequest request){
+  //  Chuyển trạng thái OrderDetail từ 6->7
+  public Map<String, Object> createOrderReturn(long orderDetailId,
+      CreateOrderReturnRequest request) {
     // Tạo OrderReturn
     OrderDetail orderDetail = orderDetailRepository.findById(orderDetailId)
-        .orElseThrow(()-> new NotFoundException("Không tìm thấy OrderDetail có id:"+ orderDetailId));
-      OrderReturn orderReturn = new OrderReturn();
+        .orElseThrow(
+            () -> new NotFoundException("Không tìm thấy OrderDetail có id:" + orderDetailId));
+    OrderReturn orderReturn = new OrderReturn();
     Notification notification = new Notification();
-      orderReturn.setOrderDetail(orderDetail);
-      BeanUtils.copyProperties(request,orderReturn);
+    orderReturn.setOrderDetail(orderDetail);
+    BeanUtils.copyProperties(request, orderReturn);
 
 //      Kiểm tra trạng thái
 //    Nếu như cũ thì cộng lại quantity vào kho
 //    Nếu mô tả khác : tạo ProductDetail mới và lưu vào kho với số lượng như đã có
-    if(request.getCondition().equals("Như cũ")){
+    if (request.getCondition().equals("Như cũ")) {
       ProductDetail productDetail = orderDetail.getProductDetail();
       productDetail.setInventory(productDetail.getInventory() + request.getQuantity());
       productDetailRepository.save(productDetail);
-    }
-    else{
+    } else {
       ProductDetail productDetail = new ProductDetail();
-      BeanUtils.copyProperties(orderDetail.getProductDetail(),productDetail,"id","orderDetails","reviews");
+      BeanUtils.copyProperties(orderDetail.getProductDetail(), productDetail, "id", "orderDetails",
+          "reviews");
       productDetail.setInventory(request.getQuantity());
       productDetail.setCondition(request.getCondition());
 //      productDetail.setProduct(orderDetail.getProductDetail().getProduct());
       productDetailRepository.save(productDetail);
     }
-      orderReturnRepository.save(orderReturn);
-      orderDetail.setStatus(7);
+    orderReturnRepository.save(orderReturn);
+    orderDetail.setStatus(7);
 //      Nếu không có phụ phí thì chuyển sang trnajg thái 8 luôn
-    if(request.totalFee() == 0){
+    if (request.totalFee() == 0) {
       orderDetail.setStatus(8);
-    }
-
-    else{
+    } else {
       notification.setOrderId(orderDetailId);
       notification.setRoleReceive("customer");
-      notification.setContent("Đơn hàng "+orderDetailId+" yêu cầu bồi thường phí thiệt hại");
+      notification.setContent("Đơn hàng " + orderDetailId + " yêu cầu bồi thường phí thiệt hại");
       notification.setUserReceiveId(orderDetail.getOrder().getUser().getId());
       notification.setStatus(false);
       notificationRepository.save(notification);
     }
-      orderDetailRepository.save(orderDetail);
+    orderDetailRepository.save(orderDetail);
     Map<String, Object> response = new HashMap<>();
     response.put("orderReturn", orderReturn);
     response.put("notification", notification);
     return response;
+  }
+
+  //  Xem các đơn hàng hoàn trả
+  public Page<OrderReturn> getOrderReturns(int page, int size) {
+    Pageable pageable = PageRequest.of(page, size);
+    return orderReturnRepository.findAll(pageable);
+  }
+
+  //  Xem chi tiết đơn hàng hoàn trả
+  public OrderReturn getOrderReturnById(long orderReturnId) {
+    return orderReturnRepository.findById(orderReturnId)
+        .orElseThrow(
+            () -> new NotFoundException("Không tìm thấy OrderReturn có id : " + orderReturnId));
   }
 }
