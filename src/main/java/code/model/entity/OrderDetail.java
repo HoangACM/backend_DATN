@@ -3,6 +3,7 @@ package code.model.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.*;
@@ -28,6 +29,9 @@ public class OrderDetail {
 
   @Column(name = "rental_day",nullable = false)
   private int rentalDay;
+
+  @Column(name = "startDate",nullable = false)
+  private LocalDate startDate;
 
   @Column(name = "current_condition",nullable = false)
   private String currentCondition;

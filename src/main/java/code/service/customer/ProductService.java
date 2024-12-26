@@ -130,6 +130,7 @@ public class ProductService {
         .orElseThrow(() -> new NotFoundException("Không thấy Product có id : " + productId));
     ProductDetailDTO productDetailDTO = new ProductDetailDTO();
     productDetailDTO.setProduct(product);
+
     productDetailDTO.setProductDetails(productDetailRepository.findByProductId(productId));
     return productDetailDTO;
   }

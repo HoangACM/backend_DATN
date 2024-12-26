@@ -1,6 +1,7 @@
 package code.model.request;
 
 import code.model.entity.ProductDetail;
+import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,4 +16,5 @@ public class ProductItem {
   private long quantity;
   private int rentalDay;
   private String note;
+  private LocalDate startDate;
 }

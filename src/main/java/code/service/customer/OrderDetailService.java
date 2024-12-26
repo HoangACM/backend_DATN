@@ -51,6 +51,11 @@ public class OrderDetailService {
     return orderDetailRepository.findAllByUserId(user.getId(), pageable);
   }
 
+  public Page<Order> getOrdersByUser(User user, int page, int size) {
+    Pageable pageable = PageRequest.of(page, size);
+    return orderRepository.findAllByUser(user, pageable);
+  }
+
   //  Lấy các đơn hàng theo trạng thái
   public Page<OrderDetail> getAllByUserAndProductDetailStatus(User user, int status, int page,
       int size) {
@@ -85,9 +90,11 @@ public class OrderDetailService {
           .orElseThrow(
               () -> new NotFoundException("Không thấy ProductDetail có id : " + productDetailId));
       OrderDetail orderDetail = new OrderDetail();
-
+      orderDetail.setStartDate(productItem.getStartDate());
       orderDetail.setRentalDay(productItem.getRentalDay());
-      orderDetail.setCurrentPrice(productDetail.getPrice());
+      orderDetail.setCurrentPrice(
+          productDetail.getPrice() * productItem.getRentalDay() * productItem.getQuantity()
+          + productDetail.getDeposit());
 
   //      Check số lượng đặt hàng với số trong kho
       if (productDetail.getInventory() < productItem.getQuantity()) {

@@ -25,8 +25,17 @@ public class OrderDetailController {
     this.webSocketController = webSocketController;
   }
 
-  //  Lấy tất cả các đơn hàng
+  //Lâyys tất cả các Order
   @GetMapping("/orders")
+  public ResponseEntity<?> getOrders(@AuthenticationPrincipal CustomUserDetails userDetail,
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size) {
+    return ResponseEntity.ok(
+        orderDetailService.getOrdersByUser(userDetail.getUser(), page, size));
+  }
+
+  //  Lấy tất cả các đơn hàng chi tiet
+  @GetMapping("/orderDetails")
   public ResponseEntity<?> getOrderDetails(@AuthenticationPrincipal CustomUserDetails userDetail,
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size) {
@@ -35,7 +44,7 @@ public class OrderDetailController {
   }
 
   //  Lấy tất cả các đơn hàng theo trạng thái : status
-  @GetMapping("/orders/")
+  @GetMapping("/orderDetails/")
   public ResponseEntity<?> getOrderDetailsByStatus(
       @AuthenticationPrincipal CustomUserDetails userDetail,
       @RequestParam(defaultValue = "0") int page,
@@ -47,7 +56,7 @@ public class OrderDetailController {
   }
 
   //  Chi tiết đơn hàng
-  @GetMapping("/orders/{orderId}")
+  @GetMapping("/orderDetails/{orderDetailId}")
   public ResponseEntity<?> getOrderDetailById(
       @AuthenticationPrincipal CustomUserDetails userDetail,
       @PathVariable long orderId) {
@@ -56,14 +65,14 @@ public class OrderDetailController {
   }
 
   // Tạo mới đơn hàng dựa trên : List<productDetailId>, userId,
-  @PostMapping("/orders")
+  @PostMapping("/orderDetails")
   public ResponseEntity<?> createOrderDetail(@AuthenticationPrincipal CustomUserDetails userDetail,
       @RequestBody CreateOrderDetailRequest request) {
     return ResponseEntity.ok(orderDetailService.createOrderDetail(userDetail.getUser(), request));
   }
 
   //  Huy don hang
-  @PutMapping("/orders/{orderDetailId}")
+  @PutMapping("/orderDetails/{orderDetailId}")
   public ResponseEntity<?> cancelOrderDetail(@AuthenticationPrincipal CustomUserDetails userDetail,
       @PathVariable Long orderDetailId) {
     return ResponseEntity.ok(
@@ -71,7 +80,7 @@ public class OrderDetailController {
   }
 
   //  Khach muon tra hang
-  @PutMapping("/orders/{orderDetailId}/return")
+  @PutMapping("/orderDetails/{orderDetailId}/return")
   public ResponseEntity<?> returnOrderDetail(@AuthenticationPrincipal CustomUserDetails userDetail,
       @PathVariable Long orderDetailId) {
     Map<String, Object> response = (Map<String, Object>) orderDetailService.wanToReturnOrderDetail(
