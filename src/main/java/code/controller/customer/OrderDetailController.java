@@ -33,7 +33,16 @@ public class OrderDetailController {
     return ResponseEntity.ok(
         orderDetailService.getOrdersByUser(userDetail.getUser(), page, size));
   }
-
+//  Xem toàn bộ sp đã đtawj thuê trong 1 đơn
+  @GetMapping("/orders/{orderId}")
+  public ResponseEntity<?> getOrderById(
+      @AuthenticationPrincipal CustomUserDetails userDetail,
+      @PathVariable long orderId,
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size) {
+    return ResponseEntity.ok(
+        orderDetailService.getOrderById(userDetail.getUser(),orderId));
+  }
   //  Lấy tất cả các đơn hàng chi tiet
   @GetMapping("/orderDetails")
   public ResponseEntity<?> getOrderDetails(@AuthenticationPrincipal CustomUserDetails userDetail,

@@ -50,8 +50,7 @@ public class Order {
   @JoinColumn(name = "user_id",nullable = false, foreignKey = @ForeignKey(name = "FK_USER_ORDER"))
   private User user;
 
-
-  @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
   @JsonIgnore
+  @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<OrderDetail> orderDetails;
 }

@@ -26,6 +26,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.jaxb.SpringDataJaxb.OrderDto;
 import org.springframework.stereotype.Service;
 
 @Service("CustomerOrderService")
@@ -71,6 +72,19 @@ public class OrderDetailService {
     List<OrderDTO> paginatedDTOs = orderDTOS.subList(start, end);
     // Trả về Page<ProductDTO> bằng cách sử dụng PageImpl
     return new PageImpl<>(paginatedDTOs, pageable, orderDTOS.size());
+  }
+
+//  Xem Order theo id
+  public OrderDTO getOrderById(User user, long orderId){
+    Order order = orderRepository.findById(orderId)
+        .orElseThrow(()-> new NotFoundException("Không tìm thấy đơn hàng"));
+    if(order.getUser().equals(user)){
+      throw new BadRequestException("Không tìm thấy đơn hàng tương ứng");
+    }
+    OrderDTO orderDTO = new OrderDTO();
+    orderDTO.setOrder(order);;
+    orderDTO.setOrderDetails(order.getOrderDetails());
+    return orderDTO;
   }
 
   //  Lấy các đơn hàng theo trạng thái
