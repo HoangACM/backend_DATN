@@ -68,9 +68,9 @@ public class OrderDetailController {
   @GetMapping("/orderDetails/{orderDetailId}")
   public ResponseEntity<?> getOrderDetailById(
       @AuthenticationPrincipal CustomUserDetails userDetail,
-      @PathVariable long orderId) {
+      @PathVariable long orderDetailId) {
     return ResponseEntity.ok(
-        orderDetailService.getByUserIdAndId(userDetail.getUser(), orderId));
+        orderDetailService.getByUserIdAndId(userDetail.getUser(), orderDetailId));
   }
 
   // Tạo mới đơn hàng dựa trên : List<productDetailId>, userId,
