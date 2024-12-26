@@ -2,8 +2,11 @@ package code.service.customer;
 
 import code.exception.BadRequestException;
 import code.exception.NotFoundException;
+import code.model.dto.OrderDTO;
+import code.model.dto.ProductDTO;
 import code.model.entity.Order;
 import code.model.entity.OrderDetail;
+import code.model.entity.Product;
 import code.model.entity.ProductDetail;
 import code.model.entity.User;
 import code.model.more.Notification;
@@ -20,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -51,9 +55,22 @@ public class OrderDetailService {
     return orderDetailRepository.findAllByUserId(user.getId(), pageable);
   }
 
-  public Page<Order> getOrdersByUser(User user, int page, int size) {
+  public Page<OrderDTO> getOrdersByUser(User user, int page, int size) {
     Pageable pageable = PageRequest.of(page, size);
-    return orderRepository.findAllByUser(user, pageable);
+    List<Order> orders = orderRepository.findByUser(user);
+//    Tạo OrderDTO ở đây
+    List<OrderDTO> orderDTOS = new ArrayList<>();
+    for (Order order : orders) {
+      OrderDTO orderDTO = new OrderDTO();
+      orderDTO.setOrder(order);
+      orderDTO.setOrderDetails(order.getOrderDetails());
+      orderDTOS.add(orderDTO);
+    }
+    int start = (int) pageable.getOffset();
+    int end = Math.min((start + pageable.getPageSize()), orderDTOS.size());
+    List<OrderDTO> paginatedDTOs = orderDTOS.subList(start, end);
+    // Trả về Page<ProductDTO> bằng cách sử dụng PageImpl
+    return new PageImpl<>(paginatedDTOs, pageable, orderDTOS.size());
   }
 
   //  Lấy các đơn hàng theo trạng thái
