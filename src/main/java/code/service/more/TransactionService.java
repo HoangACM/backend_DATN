@@ -3,12 +3,14 @@ package code.service.more;
 import code.exception.NotFoundException;
 import code.model.entity.Order;
 import code.model.entity.OrderDetail;
+import code.model.entity.OrderReturn;
 import code.model.more.Notification;
 import code.model.more.Transaction;
 import code.model.request.WebHookRequest;
 import code.repository.NotificationRepository;
 import code.repository.OrderDetailRepository;
 import code.repository.OrderRepository;
+import code.repository.OrderReturnRepository;
 import code.repository.TransactionRepository;
 import java.util.HashMap;
 import java.util.List;
@@ -24,16 +26,19 @@ public class TransactionService {
   private TransactionRepository transactionRepository;
   private OrderDetailRepository orderDetailRepository;
   private OrderRepository orderRepository;
+  private OrderReturnRepository orderReturnRepository;
   private NotificationRepository notificationRepository;
 
   public TransactionService(TransactionRepository transactionRepository,
       OrderDetailRepository orderDetailRepository,
       OrderRepository orderRepository,
-      NotificationRepository notificationRepository) {
+      NotificationRepository notificationRepository,
+      OrderReturnRepository orderReturnRepository) {
     this.transactionRepository = transactionRepository;
     this.orderDetailRepository = orderDetailRepository;
     this.orderRepository = orderRepository;
     this.notificationRepository = notificationRepository;
+    this.orderReturnRepository = orderReturnRepository;
   }
 
   //  lấy giá trị webhook lưu vào db
@@ -79,13 +84,18 @@ public class TransactionService {
         return map;
 
       }
-//    Neu ma la ******SEVQR_02_***** thi la thanh toan phu phi
-//      if(typePayment == 2){
+//    Neu ma la ******SEVQR_02_***** thi la thanh toan hoan tra cho khách
+      if(typePayment == 2){
 //        long customerId = Long.parseLong(matcher.group(2));
 //        long orderDetailId = Long.parseLong(matcher.group(3));
 //        OrderDetail orderDetail = orderDetailRepository.findById(orderDetailId)
 //            .orElseThrow(() -> new NotFoundException("Không tìm thấy OrderDetail có id : " + orderDetailId));
 //        orderDetail.setStatus(8);
+//
+//        OrderReturn orderReturn = orderDetail.getOrderReturn();
+//        orderReturn.setPaid(true);
+//
+//        orderReturnRepository.save(orderReturn);
 //        orderDetailRepository.save(orderDetail);
 //        notification.setOrderId(orderDetailId);
 //        notification.setRoleReceive("admin");
@@ -95,8 +105,9 @@ public class TransactionService {
 //        notificationRepository.save(notification);
 //        map.put("notification",notification);
 //        map.put("transaction",transaction);
-//        return map;
-//      }
+        map.put("transaction","transaction");
+        return map;
+      }
     } else {
       System.out.println("No match found");
     }
