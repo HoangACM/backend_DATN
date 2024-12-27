@@ -74,7 +74,7 @@ public class OrderDetailController {
   }
 
   // Tạo mới đơn hàng dựa trên : List<productDetailId>, userId,
-  @PostMapping("/orderDetails")
+  @PostMapping("/orders")
   public ResponseEntity<?> createOrderDetail(@AuthenticationPrincipal CustomUserDetails userDetail,
       @RequestBody CreateOrderDetailRequest request) {
     return ResponseEntity.ok(orderDetailService.createOrderDetail(userDetail.getUser(), request));
@@ -99,4 +99,6 @@ public class OrderDetailController {
     webSocketController.customerWantToReturn(notification);
     return ResponseEntity.ok(orderDetail);
   }
+
+// Xem hóa đơn thanh toán haonf trả
 }

@@ -11,8 +11,6 @@ import lombok.Setter;
 @Setter
 @Getter
 public class CreateOrderReturnRequest {
-  private long quantityLoss;
-  private Date returnDate;
   private long quantity;
   private long overdueDate;
   private long overdueFee;

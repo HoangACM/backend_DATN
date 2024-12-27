@@ -45,7 +45,9 @@ public class Order {
   @Column(name = "current_address",nullable = false)
   private String currentAddress;
 
-  @JsonIgnore
+  @Column(name = "is_paid",nullable = false)
+  private boolean isPaid = false;
+
   @ManyToOne
   @JoinColumn(name = "user_id",nullable = false, foreignKey = @ForeignKey(name = "FK_USER_ORDER"))
   private User user;

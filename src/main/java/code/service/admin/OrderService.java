@@ -7,6 +7,7 @@ import code.model.more.Notification;
 import code.model.request.CreateOrderReturnRequest;
 import code.repository.*;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.beans.BeanUtils;
@@ -127,47 +128,32 @@ public class OrderService {
     return response;
   }
 
-  //  Chuyển trạng thái OrderDetail từ 6->7
+  //  Chuyển trạng thái OrderDetail từ 6->7 : kiểm tra tạo hóa đơn bill thanh toán
+//  để chuyển hoàn lại cho khách
   public Map<String, Object> createOrderReturn(long orderDetailId,
       CreateOrderReturnRequest request) {
     // Tạo OrderReturn
     OrderDetail orderDetail = orderDetailRepository.findById(orderDetailId)
         .orElseThrow(
             () -> new NotFoundException("Không tìm thấy OrderDetail có id:" + orderDetailId));
+
     OrderReturn orderReturn = new OrderReturn();
     Notification notification = new Notification();
+    if(orderDetail.getStatus() != 6){
+      throw new BadRequestException("Không thể tạo hóa đơn!");
+    }
+    if(orderDetail.getQuantity() - request.getQuantity() < 0){
+      throw new BadRequestException("Số lượng trả vượt quá số lượng thuê");
+    }
     orderReturn.setOrderDetail(orderDetail);
+    orderReturn.setReturnDate(new Date());
+    orderReturn.setQuantityLoss(orderDetail.getQuantity() - request.getQuantity());
+
     BeanUtils.copyProperties(request, orderReturn);
 
-//      Kiểm tra trạng thái
-//    Nếu như cũ thì cộng lại quantity vào kho
-//    Nếu mô tả khác : tạo ProductDetail mới và lưu vào kho với số lượng như đã có
-    if (request.getCondition().equals("Như cũ")) {
-      ProductDetail productDetail = orderDetail.getProductDetail();
-      productDetail.setInventory(productDetail.getInventory() + request.getQuantity());
-      productDetailRepository.save(productDetail);
-    } else {
-      ProductDetail productDetail = new ProductDetail();
-      BeanUtils.copyProperties(orderDetail.getProductDetail(), productDetail, "id", "orderDetails",
-          "reviews");
-      productDetail.setInventory(request.getQuantity());
-      productDetail.setCondition(request.getCondition());
-//      productDetail.setProduct(orderDetail.getProductDetail().getProduct());
-      productDetailRepository.save(productDetail);
-    }
     orderReturnRepository.save(orderReturn);
     orderDetail.setStatus(7);
-//      Nếu không có phụ phí thì chuyển sang trnajg thái 8 luôn
-    if (request.totalFee() == 0) {
-      orderDetail.setStatus(8);
-    } else {
-      notification.setOrderId(orderDetailId);
-      notification.setRoleReceive("customer");
-      notification.setContent("Đơn hàng " + orderDetailId + " yêu cầu bồi thường phí thiệt hại");
-      notification.setUserReceiveId(orderDetail.getOrder().getUser().getId());
-      notification.setStatus(false);
-      notificationRepository.save(notification);
-    }
+    orderDetail.setOrderReturn(orderReturn);
     orderDetailRepository.save(orderDetail);
     Map<String, Object> response = new HashMap<>();
     response.put("orderReturn", orderReturn);

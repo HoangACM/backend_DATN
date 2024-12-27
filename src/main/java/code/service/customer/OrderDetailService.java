@@ -123,6 +123,7 @@ public class OrderDetailService {
       OrderDetail orderDetail = new OrderDetail();
       orderDetail.setStartDate(productItem.getStartDate());
       orderDetail.setRentalDay(productItem.getRentalDay());
+      orderDetail.setCurrentDeposit(productDetail.getDeposit());
       orderDetail.setCurrentPrice(
           productDetail.getPrice() * productItem.getRentalDay() * productItem.getQuantity()
           + productDetail.getDeposit());

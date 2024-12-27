@@ -55,6 +55,10 @@ public class OrderReturn {
   @Column(name = "feeDetail", nullable = false)
   private String feeDetail;
 
+//  Trạng thái đã chuyển khoản trả cho khách hàng hay chưa
+  @Column(name = "is_paid",nullable = false)
+  private boolean isPaid = false;
+
   @Column(name = "created_at", nullable = false)
   @CreationTimestamp
   private LocalDateTime createdAt;

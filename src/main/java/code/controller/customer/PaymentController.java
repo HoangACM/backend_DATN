@@ -42,10 +42,10 @@ public class PaymentController {
       webSocketController.customerPaySuccessForadmin(notification);
       webSocketController.customerPaySuccess(transaction.getCustomerId(), "Thanh toán thành công");
     }
-    if(transaction.getTypePayment() == 2){
-      webSocketController.customerPayFeeSuccessForadmin(notification);
-      webSocketController.customerPayFeeSuccess(transaction.getCustomerId(),"Thanh toán phí thành công");
-    }
+//    if(transaction.getTypePayment() == 2){
+//      webSocketController.customerPayFeeSuccessForadmin(notification);
+//      webSocketController.customerPayFeeSuccess(transaction.getCustomerId(),"Thanh toán phí thành công");
+//    }
     // Trả về HTTP Status 201 với JSON
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }

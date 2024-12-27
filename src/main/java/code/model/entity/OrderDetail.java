@@ -27,6 +27,9 @@ public class OrderDetail {
   @Column(name = "current_price",nullable = false)
   private long currentPrice;
 
+  @Column(name = "current_deposit",nullable = false)
+  private long currentDeposit;
+
   @Column(name = "rental_day",nullable = false)
   private int rentalDay;
 
@@ -47,8 +50,8 @@ public class OrderDetail {
 //  4 : Đã giao đến nơi -> Tạo 1 OrderReturn (chỉ khách chuyển 4->5)
 //  5 : Khách hàng muốn trả đơn hàng(chỉ admin chuyển 5->6)
 //  6 : Khách hàng đã trả xong và tạo OrderReturn để tính phí nếu hỏng, quá hạn, ...
-//  7 : Có phát sinh thêm phí đang chờ KH thanh toán phí này
-//  8 : Hoàn tất
+//  7 : Tạo hóa đơn thanh toán (OrderReturn) gồm chi tiết phí, trạng thái trả hàng,......
+//  8 : Hoàn tiền trả về cho khách thành công
 //  0 : Đã hủy
 
 //  cus : 1->0(hủy đơn),1->2(KH đã thanh toán xong)
