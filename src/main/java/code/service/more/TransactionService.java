@@ -55,7 +55,7 @@ public class TransactionService {
 //    Thanh toan don hang(*******SEVQRKH****DH***)
 //    Nop phu phi qua han, mat, hong san pham(*******SEVQR_02_makhachhang_madonhang)
     System.out.println(transaction.getContent());
-    String regex = "SEVQR(\\d+)KH(\\d+)DH(\\d+)";
+    String regex = ".*SEVQR(\\d+)KH(\\d+)DH(\\d+)";
     Pattern pattern = Pattern.compile(regex);
     Matcher matcher = pattern.matcher(transaction.getContent());
 
@@ -84,31 +84,24 @@ public class TransactionService {
         return map;
 
       }
-//    Neu ma la ******SEVQR_02_***** thi la thanh toan hoan tra cho khách
       if(typePayment == 2){
-//        long customerId = Long.parseLong(matcher.group(2));
-//        long orderDetailId = Long.parseLong(matcher.group(3));
-//        OrderDetail orderDetail = orderDetailRepository.findById(orderDetailId)
-//            .orElseThrow(() -> new NotFoundException("Không tìm thấy OrderDetail có id : " + orderDetailId));
-//        orderDetail.setStatus(8);
-//
-//        OrderReturn orderReturn = orderDetail.getOrderReturn();
-//        orderReturn.setPaid(true);
-//
-//        orderReturnRepository.save(orderReturn);
-//        orderDetailRepository.save(orderDetail);
-//        notification.setOrderId(orderDetailId);
-//        notification.setRoleReceive("admin");
-//        notification.setContent("Đơn hàng "+orderDetailId+" đã được khách hàng thanh toán phụ phí");
-//        notification.setUserReceiveId(0);
-//        notification.setStatus(false);
-//        notificationRepository.save(notification);
-//        map.put("notification",notification);
-//        map.put("transaction",transaction);
-        map.put("transaction","transaction");
+        long customerId = Long.parseLong(matcher.group(2));
+        long orderDetailId = Long.parseLong(matcher.group(3));
+        OrderDetail orderDetail = orderDetailRepository.findById(orderDetailId)
+                .orElseThrow(()-> new NotFoundException("Không tìm thấy OrderDetail có id : "+orderDetailId));
+        notification.setOrderId(orderDetailId);
+        notification.setRoleReceive("admin");
+        notification.setContent("Đơn hàng "+orderDetailId+" đã được hoàn tiênf cho khách");
+        notification.setUserReceiveId(0);
+        notification.setStatus(false);
+        notificationRepository.save(notification);
+        map.put("notification",notification);
+        map.put("transaction",transaction);
         return map;
+
       }
-    } else {
+    }
+    else {
       System.out.println("No match found");
     }
     return null;

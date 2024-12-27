@@ -56,7 +56,7 @@ public class Transaction {
 
   @JsonIgnore
   public long getCustomerId(){
-    String regex = "SEVQR(\\d+)KH(\\d+)DH(\\d+)";
+    String regex = ".*SEVQR(\\d+)KH(\\d+)DH(\\d+)";
     Pattern pattern = Pattern.compile(regex);
     Matcher matcher = pattern.matcher(this.content);
     String maType = "";
@@ -74,7 +74,7 @@ public class Transaction {
   }
   @JsonIgnore
   public long getTypePayment(){
-    String regex = "SEVQR(\\d+)KH(\\d+)DH(\\d+)";
+    String regex = ".*SEVQR(\\d+)KH(\\d+)DH(\\d+)";
     Pattern pattern = Pattern.compile(regex);
     Matcher matcher = pattern.matcher(this.content);
     String maType = "";
@@ -92,7 +92,7 @@ public class Transaction {
   }
   @JsonIgnore
   public long getOrderId(){
-    String regex = "SEVQR(\\d+)KH(\\d+)DH(\\d+)";
+    String regex = ".*SEVQR(\\d+)KH(\\d+)DH(\\d+)";
     Pattern pattern = Pattern.compile(regex);
     Matcher matcher = pattern.matcher(this.content);
     String maType = "";
