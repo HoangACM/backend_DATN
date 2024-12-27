@@ -16,5 +16,5 @@ import org.springframework.stereotype.Repository;
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
 //  Page<Order> findAllByUser(User user, Pageable pageable);
-  List<Order> findByUserAAndAndPaid(User user,boolean status);
+  List<Order> findByUserAndAndPaid(User user,boolean status);
 }
