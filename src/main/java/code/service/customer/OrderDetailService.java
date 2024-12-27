@@ -58,7 +58,7 @@ public class OrderDetailService {
 
   public Page<OrderDTO> getOrdersByUser(User user, int page, int size) {
     Pageable pageable = PageRequest.of(page, size);
-    List<Order> orders = orderRepository.findByUserAndAndPaid(user,false);
+    List<Order> orders = orderRepository.findByUserAndIsPaid(user,false);
 //    Tạo OrderDTO ở đây
     List<OrderDTO> orderDTOS = new ArrayList<>();
     for (Order order : orders) {
