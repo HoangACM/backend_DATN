@@ -58,7 +58,7 @@ public class OrderDetailService {
 
   public Page<OrderDTO> getOrdersByUser(User user, int page, int size) {
     Pageable pageable = PageRequest.of(page, size);
-    List<Order> orders = orderRepository.findByUser(user);
+    List<Order> orders = orderRepository.findByUserAAndAndPaid(user,false);
 //    Tạo OrderDTO ở đây
     List<OrderDTO> orderDTOS = new ArrayList<>();
     for (Order order : orders) {
@@ -144,17 +144,15 @@ public class OrderDetailService {
     return orderDetails;
   }
 
-  public OrderDetail cancelOrderDetail(User user, long orderDetailId) {
-    OrderDetail orderDetail = orderDetailRepository.findByOrderDetailIdAndUserId(orderDetailId,
-            user.getId())
-        .orElseThrow(() -> new NotFoundException(
-            "Không tìm thấy đơn hàng tương ứng "));
-    if (orderDetail.getStatus() == 1 ) {
+  public Order cancelOrder(User user, long orderId) {
+    Order order = orderRepository.findById(orderId)
+        .orElseThrow(()-> new NotFoundException("Không tìm thấy Order có id :"+ orderId));
+    for(OrderDetail orderDetail : order.getOrderDetails()){
       orderDetail.setStatus(0);
-    } else {
-      throw new BadRequestException("Không thể hủy đơn hàng ở trạng thái này.");
+      orderDetailRepository.save(orderDetail);
     }
-    return orderDetail;
+    order.setCancel(true);
+    return orderRepository.save(order);
   }
 
 //  đơn hàng ở stt4 : đã nhận được hàng và khách hàng có nhu cầu trả hàng -> chuyển status từ 4->5

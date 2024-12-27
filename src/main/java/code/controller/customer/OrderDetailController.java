@@ -25,7 +25,7 @@ public class OrderDetailController {
     this.webSocketController = webSocketController;
   }
 
-  //Lâyys tất cả các Order
+  //Lâyys tất cả các Order (các nhóm chưa thanh toán)
   @GetMapping("/orders")
   public ResponseEntity<?> getOrders(@AuthenticationPrincipal CustomUserDetails userDetail,
       @RequestParam(defaultValue = "0") int page,
@@ -43,7 +43,7 @@ public class OrderDetailController {
     return ResponseEntity.ok(
         orderDetailService.getOrderById(userDetail.getUser(),orderId));
   }
-  //  Lấy tất cả các đơn hàng chi tiet
+  //  Lấy tất cả các đơn hàng chi tiet (Loại tất cả các sp có status = 1 : chưa thanh toán)
   @GetMapping("/orderDetails")
   public ResponseEntity<?> getOrderDetails(@AuthenticationPrincipal CustomUserDetails userDetail,
       @RequestParam(defaultValue = "0") int page,
@@ -81,11 +81,11 @@ public class OrderDetailController {
   }
 
   //  Huy don hang
-  @PutMapping("/orderDetails/{orderDetailId}")
+  @DeleteMapping("/orders/{orderId}")
   public ResponseEntity<?> cancelOrderDetail(@AuthenticationPrincipal CustomUserDetails userDetail,
-      @PathVariable Long orderDetailId) {
+      @PathVariable Long orderId) {
     return ResponseEntity.ok(
-        orderDetailService.cancelOrderDetail(userDetail.getUser(), orderDetailId));
+        orderDetailService.cancelOrder(userDetail.getUser(), orderId));
   }
 
   //  Khach muon tra hang

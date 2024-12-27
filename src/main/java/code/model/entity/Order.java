@@ -48,6 +48,9 @@ public class Order {
   @Column(name = "is_paid",nullable = false)
   private boolean isPaid = false;
 
+  @Column(name = "is_cancel",nullable = false)
+  private boolean isCancel = false;
+
   @ManyToOne
   @JoinColumn(name = "user_id",nullable = false, foreignKey = @ForeignKey(name = "FK_USER_ORDER"))
   private User user;

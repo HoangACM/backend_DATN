@@ -18,6 +18,8 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, Long> 
       + "JOIN od.order o "
       + "JOIN o.user u "
       + "WHERE u.id = :userId "
+      + "AND od.status <> 1 "
+      + "AND od.status <> 0 "
       + "ORDER BY od.updatedAt DESC")
   Page<OrderDetail> findAllByUserId(@Param("userId") Long userId, Pageable pageable);
 
