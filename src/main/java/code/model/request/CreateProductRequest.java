@@ -1,6 +1,7 @@
 package code.model.request;
 
 import jakarta.validation.constraints.NotBlank;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,4 +20,5 @@ public class CreateProductRequest {
   private  String name;
   private long categoryId;
   private MultipartFile file;
+  private List<CreateProductDetailRequest> createProductDetailRequests;
 }
