@@ -35,4 +35,17 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
   Long findTotalTransferAmountByCategoryAndDateRange(
       Long categoryId, LocalDateTime startDate, LocalDateTime endDate);
 
+  @Query("""
+        SELECT 
+            COALESCE(SUM(CASE WHEN t.transferType = 'in' THEN t.transferAmount ELSE 0 END), 0) 
+            - 
+            COALESCE(SUM(CASE WHEN t.transferType = 'out' THEN t.transferAmount ELSE 0 END), 0) 
+        FROM Transaction t 
+        WHERE t.transactionDate BETWEEN :startDate AND :endDate
+    """)
+  Long calculateRevenueBetweenDates(
+      @Param("startDate") LocalDateTime startDate,
+      @Param("endDate") LocalDateTime endDate
+  );
+
 }

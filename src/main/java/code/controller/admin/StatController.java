@@ -53,19 +53,23 @@ public class StatController {
         statService.statOverall());
   }
 
-  // Thống kê doanh thu của 12 tháng theo năm
+  // Thống kê doanh thu theo khảng thười gian
   @GetMapping("/stat/revenue")
-  public ResponseEntity<?> statRevenueByYear(@RequestParam int year) {
-    return ResponseEntity.ok(statService.statByMonths(year));
+  public ResponseEntity<Long> calculateRevenue(
+      @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+      @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
+
+    Long revenue = statService.calculateRevenue(startDate, endDate);
+    return ResponseEntity.ok(revenue);
   }
 
   //  Thống kê doanh thu theo danh mục
-  @GetMapping("/stat/categories/{categoryId}/revenue")
-  public ResponseEntity<?> statRevenueByYearAndCategory(
-      @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
-      @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
-      @PathVariable long categoryId) {
-    return ResponseEntity.ok(
-        statService.statRevenueByCategoryIdAndYear(categoryId, startDate, endDate));
-  }
+//  @GetMapping("/stat/categories/{categoryId}/revenue")
+//  public ResponseEntity<?> statRevenueByYearAndCategory(
+//      @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+//      @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
+//      @PathVariable long categoryId) {
+//    return ResponseEntity.ok(
+//        statService.statRevenueByCategoryIdAndYear(categoryId, startDate, endDate));
+//  }
 }

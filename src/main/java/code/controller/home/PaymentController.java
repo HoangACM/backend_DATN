@@ -1,4 +1,4 @@
-package code.controller.customer;
+package code.controller.home;
 
 import code.controller.more.WebSocketController;
 import code.model.more.Notification;

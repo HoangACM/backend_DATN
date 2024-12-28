@@ -6,6 +6,7 @@ import code.model.dto.OrderDTO;
 import code.model.dto.ProductDTO;
 import code.model.entity.Order;
 import code.model.entity.OrderDetail;
+import code.model.entity.OrderReturn;
 import code.model.entity.Product;
 import code.model.entity.ProductDetail;
 import code.model.entity.User;
@@ -15,6 +16,7 @@ import code.model.request.ProductItem;
 import code.repository.NotificationRepository;
 import code.repository.OrderDetailRepository;
 import code.repository.OrderRepository;
+import code.repository.OrderReturnRepository;
 import code.repository.ProductDetailRepository;
 import code.repository.UserRepository;
 import java.util.ArrayList;
@@ -37,14 +39,17 @@ public class OrderDetailService {
   private UserRepository userRepository;
   private ProductDetailRepository productDetailRepository;
   private NotificationRepository notificationRepository;
+  private OrderReturnRepository orderReturnRepository;
 
   public OrderDetailService(OrderDetailRepository orderDetailRepository,
+      OrderReturnRepository orderReturnRepository,
       UserRepository userRepository,
       ProductDetailRepository productDetailRepository,
       OrderRepository orderRepository,
       NotificationRepository notificationRepository) {
     this.orderDetailRepository = orderDetailRepository;
     this.userRepository = userRepository;
+    this.orderReturnRepository = orderReturnRepository;
     this.orderRepository = orderRepository;
     this.notificationRepository = notificationRepository;
     this.productDetailRepository = productDetailRepository;
@@ -58,7 +63,8 @@ public class OrderDetailService {
 
   public Page<OrderDTO> getOrdersByUser(User user, int page, int size) {
     Pageable pageable = PageRequest.of(page, size);
-    List<Order> orders = orderRepository.findByUserAndIsPaid(user,false);
+//    List<Order> orders = orderRepository.findByUserAndIsPaid(user, false);
+    List<Order> orders = orderRepository.findByUser(user);
 //    Tạo OrderDTO ở đây
     List<OrderDTO> orderDTOS = new ArrayList<>();
     for (Order order : orders) {
@@ -74,15 +80,16 @@ public class OrderDetailService {
     return new PageImpl<>(paginatedDTOs, pageable, orderDTOS.size());
   }
 
-//  Xem Order theo id
-  public OrderDTO getOrderById(User user, long orderId){
+  //  Xem Order theo id
+  public OrderDTO getOrderById(User user, long orderId) {
     Order order = orderRepository.findById(orderId)
-        .orElseThrow(()-> new NotFoundException("Không tìm thấy đơn hàng"));
-    if(order.getUser().equals(user)){
+        .orElseThrow(() -> new NotFoundException("Không tìm thấy đơn hàng"));
+    if (order.getUser().equals(user)) {
       throw new BadRequestException("Không tìm thấy đơn hàng tương ứng");
     }
     OrderDTO orderDTO = new OrderDTO();
-    orderDTO.setOrder(order);;
+    orderDTO.setOrder(order);
+    ;
     orderDTO.setOrderDetails(order.getOrderDetails());
     return orderDTO;
   }
@@ -91,7 +98,8 @@ public class OrderDetailService {
   public Page<OrderDetail> getAllByUserAndProductDetailStatus(User user, int status, int page,
       int size) {
     Pageable pageable = PageRequest.of(page, size);
-    return orderDetailRepository.findAllByUserIdAndProductDetailStatus(user.getId(), status, pageable);
+    return orderDetailRepository.findAllByUserIdAndProductDetailStatus(user.getId(), status,
+        pageable);
   }
 
   // Xem đơn hàng cụ thể có id là orderDetailId
@@ -105,7 +113,7 @@ public class OrderDetailService {
 
   //  Tạo mới đơn hàng : Tạo đối tượng order -> xửa lí List<productDetailId> và trạng thái 1 là chưa thanh toán
   public List<OrderDetail> createOrderDetail(User user, CreateOrderDetailRequest request) {
-  //    1 - Tạo Order mới
+    //    1 - Tạo Order mới
     Order order = new Order();
     order.setUser(user);
     order.setPayment(request.getPayment());
@@ -113,7 +121,7 @@ public class OrderDetailService {
     order.setCurrentAddress(request.getCurrentAddress());
     order.setCurrentPhone(request.getCurrentPhone());
     orderRepository.save(order);
-  //      Xử lý danh sách các ProductDetail x Quantity
+    //      Xử lý danh sách các ProductDetail x Quantity
     List<OrderDetail> orderDetails = new ArrayList<>();
     for (ProductItem productItem : request.getProductItems()) {
       long productDetailId = productItem.getProductDetailId();
@@ -126,9 +134,9 @@ public class OrderDetailService {
       orderDetail.setCurrentDeposit(productDetail.getDeposit());
       orderDetail.setCurrentPrice(
           productDetail.getPrice() * productItem.getRentalDay() * productItem.getQuantity()
-          + productDetail.getDeposit());
+              + productDetail.getDeposit());
 
-  //      Check số lượng đặt hàng với số trong kho
+      //      Check số lượng đặt hàng với số trong kho
       if (productDetail.getInventory() < productItem.getQuantity()) {
         throw new BadRequestException("Số lượng quá giới hạn");
       }
@@ -146,8 +154,8 @@ public class OrderDetailService {
 
   public Order cancelOrder(User user, long orderId) {
     Order order = orderRepository.findById(orderId)
-        .orElseThrow(()-> new NotFoundException("Không tìm thấy Order có id :"+ orderId));
-    for(OrderDetail orderDetail : order.getOrderDetails()){
+        .orElseThrow(() -> new NotFoundException("Không tìm thấy Order có id :" + orderId));
+    for (OrderDetail orderDetail : order.getOrderDetails()) {
       orderDetail.setStatus(0);
       orderDetailRepository.save(orderDetail);
     }
@@ -155,28 +163,38 @@ public class OrderDetailService {
     return orderRepository.save(order);
   }
 
-//  đơn hàng ở stt4 : đã nhận được hàng và khách hàng có nhu cầu trả hàng -> chuyển status từ 4->5
-public Map<String,Object> wanToReturnOrderDetail(User user, long orderDetailId) {
-  OrderDetail orderDetail = orderDetailRepository.findByOrderDetailIdAndUserId(orderDetailId,
-          user.getId())
-      .orElseThrow(() -> new NotFoundException(
-          "Không tìm thấy đơn hàng tương ứng "));
-  Notification notification = new Notification();
-  if (orderDetail.getStatus() == 4 ) {
-    orderDetail.setStatus(5);
-    notification.setOrderId(orderDetailId);
-    notification.setRoleReceive("admin");
-    notification.setContent("Đơn hàng "+orderDetailId+" đang được người dùng muốn trả");
-    notification.setUserReceiveId(0);
-    notification.setStatus(false);
-    notificationRepository.save(notification);
-  } else {
-    throw new BadRequestException("Lỗi khi thay đổi trạng thái.");
+  //  đơn hàng ở stt4 : đã nhận được hàng và khách hàng có nhu cầu trả hàng -> chuyển status từ 4->5
+  public Map<String, Object> wanToReturnOrderDetail(User user, long orderDetailId) {
+    OrderDetail orderDetail = orderDetailRepository.findByOrderDetailIdAndUserId(orderDetailId,
+            user.getId())
+        .orElseThrow(() -> new NotFoundException(
+            "Không tìm thấy đơn hàng tương ứng "));
+    Notification notification = new Notification();
+    if (orderDetail.getStatus() == 4) {
+      orderDetail.setStatus(5);
+      notification.setOrderId(orderDetailId);
+      notification.setRoleReceive("admin");
+      notification.setContent("Đơn hàng " + orderDetailId + " đang được người dùng muốn trả");
+      notification.setUserReceiveId(0);
+      notification.setStatus(false);
+      notificationRepository.save(notification);
+    } else {
+      throw new BadRequestException("Lỗi khi thay đổi trạng thái.");
+    }
+    Map<String, Object> map = new HashMap<>();
+    map.put("notification", notification);
+    map.put("orderDetail", orderDetail);
+    return map;
   }
-  Map<String,Object> map = new HashMap<>();
-  map.put("notification",notification);
-  map.put("orderDetail",orderDetail);
-  return map;
-}
 
+//  Xem hóa đơn hoàn trả
+  public Page<OrderReturn> getOrderReturns(User user, int page, int size){
+    Pageable pageable = PageRequest.of(page, size);
+    return orderReturnRepository.findAllByUserId(user.getId(), pageable);
+  }
+
+  public OrderReturn getOrderReturnById(User user,long orderReturnId){
+    return orderReturnRepository.findById(orderReturnId)
+        .orElseThrow(()-> new NotFoundException("Không tìm thấy OrderReturn có id : "+orderReturnId));
+  }
 }

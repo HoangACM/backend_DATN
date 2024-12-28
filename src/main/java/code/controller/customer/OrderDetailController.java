@@ -33,7 +33,8 @@ public class OrderDetailController {
     return ResponseEntity.ok(
         orderDetailService.getOrdersByUser(userDetail.getUser(), page, size));
   }
-//  Xem toàn bộ sp đã đtawj thuê trong 1 đơn
+
+  //  Xem toàn bộ sp đã đtawj thuê trong 1 đơn
   @GetMapping("/orders/{orderId}")
   public ResponseEntity<?> getOrderById(
       @AuthenticationPrincipal CustomUserDetails userDetail,
@@ -41,16 +42,16 @@ public class OrderDetailController {
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size) {
     return ResponseEntity.ok(
-        orderDetailService.getOrderById(userDetail.getUser(),orderId));
+        orderDetailService.getOrderById(userDetail.getUser(), orderId));
   }
-  //  Lấy tất cả các đơn hàng chi tiet (Loại tất cả các sp có status = 1 : chưa thanh toán)
-  @GetMapping("/orderDetails")
-  public ResponseEntity<?> getOrderDetails(@AuthenticationPrincipal CustomUserDetails userDetail,
-      @RequestParam(defaultValue = "0") int page,
-      @RequestParam(defaultValue = "10") int size) {
-    return ResponseEntity.ok(
-        orderDetailService.getOrderDetailsByUser(userDetail.getUser(), page, size));
-  }
+  //  Lấy tất cả các đơn hàng chi tiet (Loại tất cả các sp có status = 1&&0 : chưa thanh toán)
+//  @GetMapping("/orderDetails")
+//  public ResponseEntity<?> getOrderDetails(@AuthenticationPrincipal CustomUserDetails userDetail,
+//      @RequestParam(defaultValue = "0") int page,
+//      @RequestParam(defaultValue = "10") int size) {
+//    return ResponseEntity.ok(
+//        orderDetailService.getOrderDetailsByUser(userDetail.getUser(), page, size));
+//  }
 
   //  Lấy tất cả các đơn hàng theo trạng thái : status
   @GetMapping("/orderDetails/")
@@ -100,5 +101,25 @@ public class OrderDetailController {
     return ResponseEntity.ok(orderDetail);
   }
 
-// Xem hóa đơn thanh toán haonf trả
+  // Xem toàn bộ  hóa đơn thanh toán haonf trả
+  @GetMapping("/orderReturns")
+  public ResponseEntity<?> getOrderReturns(
+      @AuthenticationPrincipal CustomUserDetails userDetail,
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size) {
+    return ResponseEntity.ok(orderDetailService.getOrderReturns(userDetail.getUser(), page, size));
+  }
+
+  ;
+
+  //  Xem hóa đơn chi tiết
+  @GetMapping("/orderReturns/{orderReturnId}")
+  public ResponseEntity<?> getOrderReturnById(
+      @AuthenticationPrincipal CustomUserDetails userDetail,
+      @PathVariable long orderReturnId) {
+    return ResponseEntity.ok(
+        orderDetailService.getOrderReturnById(userDetail.getUser(), orderReturnId));
+  }
+
+  ;
 }

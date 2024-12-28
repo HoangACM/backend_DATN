@@ -71,13 +71,9 @@ public class StatService {
     return map;
   }
 
-  //  Thống kê doanh thu theo từng tháng của năm year
-  public Map<String, Long> statByMonths(int year) {
-    Map<String, Long> map = new LinkedHashMap<>();
-    for (int i = 1; i <= 12; i++) {
-      map.put("t" + i, transactionRepository.getTotalAmountByMonthYearAndX(i, year, 1));
-    }
-    return map;
+  //  Thống kê doanh thu theo khoảng thười gian
+  public Long calculateRevenue(LocalDateTime startDate, LocalDateTime endDate) {
+    return transactionRepository.calculateRevenueBetweenDates(startDate, endDate);
   }
 
   //  Thống kê doanh thu theo năm của danh mục
