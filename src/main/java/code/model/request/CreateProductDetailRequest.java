@@ -16,5 +16,5 @@ public class CreateProductDetailRequest {
   private long price;
   private String condition;
   private long inventory;
-  private long product_id;
+//  private long product_id;
 }
