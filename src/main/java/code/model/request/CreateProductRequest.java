@@ -20,5 +20,4 @@ public class CreateProductRequest {
   private  String name;
   private long categoryId;
   private MultipartFile file;
-  private List<CreateProductDetailRequest> createProductDetailRequests;
 }

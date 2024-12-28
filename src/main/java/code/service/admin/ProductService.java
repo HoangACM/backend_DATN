@@ -3,14 +3,11 @@ package code.service.admin;
 import code.exception.*;
 import code.model.entity.Category;
 import code.model.entity.Product;
-import code.model.entity.ProductDetail;
 import code.model.more.Image;
-import code.model.request.CreateProductDetailRequest;
 import code.model.request.CreateProductRequest;
 import code.model.request.UpdateProductRequest;
 import code.repository.CategoryRepository;
 import code.repository.ImageRepository;
-import code.repository.ProductDetailRepository;
 import code.repository.ProductRepository;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.Transformation;
@@ -43,13 +40,10 @@ public class ProductService {
   private CategoryRepository categoryRepository;
   private final Cloudinary cloudinary;
   private ImageRepository imageRepository;
-  private ProductDetailRepository productDetailRepository;
 
   public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository,
-      Cloudinary cloudinary, ImageRepository imageRepository,
-      ProductDetailRepository productDetailRepository) {
+      Cloudinary cloudinary, ImageRepository imageRepository) {
     this.productRepository = productRepository;
-    this.productDetailRepository = productDetailRepository;
     this.categoryRepository = categoryRepository;
     this.cloudinary = cloudinary;
     this.imageRepository = imageRepository;
@@ -139,17 +133,6 @@ public class ProductService {
     image.setProductOfThumbnail(product);
     imageRepository.save(image);
 
-    for(CreateProductDetailRequest requestDetail : request.getCreateProductDetailRequests()){
-      ProductDetail productDetail = new ProductDetail();
-      productDetail.setProduct(product);
-      productDetail.setColor(requestDetail.getColor());
-      productDetail.setType(requestDetail.getType());
-      productDetail.setPrice(requestDetail.getPrice());
-      productDetail.setCondition(requestDetail.getCondition());
-      productDetail.setInventory(requestDetail.getInventory());
-      productDetail.setStatus(true);
-      productDetailRepository.save(productDetail);
-    }
     product.setThumbnail(image);
     return productRepository.save(product);
   }
