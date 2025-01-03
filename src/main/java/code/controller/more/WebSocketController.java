@@ -23,8 +23,8 @@ public class WebSocketController {
   }
 
   //  Customer gửi tin nhắn tới admin
-  public void customerSendToAdmin(Object message) {
-    String destination = "/customer/send/admin";
+  public void customerSendToAdmin(Object message,long customerId) {
+    String destination = "/customer/send/admin" + customerId;
     messagingTemplate.convertAndSend(destination, message);
   }
 

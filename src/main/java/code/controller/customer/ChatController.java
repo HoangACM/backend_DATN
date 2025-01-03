@@ -34,7 +34,7 @@ public class ChatController {
   public ResponseEntity<?> chatToAdmin(@AuthenticationPrincipal CustomUserDetails userDetail,@RequestBody
   ChatRequest request){
     Message response = chatService.chatToAdmin(request,userDetail.getUser());
-    webSocketController.customerSendToAdmin(response);
+    webSocketController.customerSendToAdmin(response,userDetail.getUser().getId());
     return ResponseEntity.ok(response);
   }
 
