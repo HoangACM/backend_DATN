@@ -112,7 +112,7 @@ public class OrderDetailService {
   }
 
   //  Tạo mới đơn hàng : Tạo đối tượng order -> xửa lí List<productDetailId> và trạng thái 1 là chưa thanh toán
-  public List<OrderDetail> createOrderDetail(User user, CreateOrderDetailRequest request) {
+  public Order createOrderDetail(User user, CreateOrderDetailRequest request) {
     //    1 - Tạo Order mới
     Order order = new Order();
     order.setUser(user);
@@ -149,7 +149,7 @@ public class OrderDetailService {
       orderDetails.add(orderDetail);
       orderDetailRepository.save(orderDetail);
     }
-    return orderDetails;
+    return order;
   }
 
   public Order cancelOrder(User user, long orderId) {

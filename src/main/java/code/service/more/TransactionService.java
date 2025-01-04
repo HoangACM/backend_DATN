@@ -1,5 +1,6 @@
 package code.service.more;
 
+import code.exception.BadRequestException;
 import code.exception.NotFoundException;
 import code.model.entity.Order;
 import code.model.entity.OrderDetail;
@@ -42,10 +43,10 @@ public class TransactionService {
   }
 
   //  lấy giá trị webhook lưu vào db
-  public Map<String,Object> addTransactionFromWebHook(WebHookRequest request) {
+  public Map<String, Object> addTransactionFromWebHook(WebHookRequest request) {
     Notification notification = new Notification();
     Transaction transaction = new Transaction();
-    Map<String,Object> map = new HashMap<>();
+    Map<String, Object> map = new HashMap<>();
     BeanUtils.copyProperties(request, transaction);
     transaction.setIdSepay(request.getId());
     transaction.setId(null);
@@ -62,33 +63,43 @@ public class TransactionService {
     if (matcher.find()) {
       long typePayment = Long.parseLong(matcher.group(1));
 //    Neu ma la ******SEVQR_01_****** thi la chuyen khoan thanh toan don hang
-      if(typePayment == 1){
+      if (typePayment == 1) {
+        long totalPayment = 0;
         long customerId = Long.parseLong(matcher.group(2));
         long orderId = Long.parseLong(matcher.group(3));
         Order order = orderRepository.findById(orderId)
             .orElseThrow(() -> new NotFoundException("Không tìm thấy Order có id : " + orderId));
+        for (OrderDetail orderDetail : order.getOrderDetails()) {
+          totalPayment +=
+              orderDetail.getCurrentPrice();
+        }
+        if (totalPayment != request.getTransferAmount()) {
+          throw new BadRequestException(
+              "Số tiền giao dịch không khớp. Không thể chuyển trạng thái đơn hàng");
+        }
         order.setPaid(true);
         List<OrderDetail> orderDetails = orderDetailRepository.findByOrder(order);
-        for(OrderDetail orderDetail : orderDetails){
+        for (OrderDetail orderDetail : orderDetails) {
           orderDetail.setStatus(2);
           orderDetailRepository.save(orderDetail);
         }
         notification.setOrderId(orderId);
         notification.setRoleReceive("admin");
-        notification.setContent("Đơn hàng "+orderId+" đã được khách hàng thanh toán");
+        notification.setContent("Đơn hàng " + orderId + " đã được khách hàng thanh toán");
         notification.setUserReceiveId(0);
         notification.setStatus(false);
         notificationRepository.save(notification);
-        map.put("notification",notification);
-        map.put("transaction",transaction);
+        map.put("notification", notification);
+        map.put("transaction", transaction);
         return map;
 
       }
-      if(typePayment == 2){
+      if (typePayment == 2) {
         long customerId = Long.parseLong(matcher.group(2));
         long orderDetailId = Long.parseLong(matcher.group(3));
         OrderDetail orderDetail = orderDetailRepository.findById(orderDetailId)
-                .orElseThrow(()-> new NotFoundException("Không tìm thấy OrderDetail có id : "+orderDetailId));
+            .orElseThrow(
+                () -> new NotFoundException("Không tìm thấy OrderDetail có id : " + orderDetailId));
         orderDetail.setStatus(8);
         OrderReturn orderReturn = orderDetail.getOrderReturn();
         orderReturn.setPaid(true);
@@ -97,17 +108,16 @@ public class TransactionService {
 
         notification.setOrderId(orderDetailId);
         notification.setRoleReceive("admin");
-        notification.setContent("Đơn hàng "+orderDetailId+" đã được hoàn tiênf cho khách");
+        notification.setContent("Đơn hàng " + orderDetailId + " đã được hoàn tiênf cho khách");
         notification.setUserReceiveId(0);
         notification.setStatus(false);
         notificationRepository.save(notification);
-        map.put("notification",notification);
-        map.put("transaction",transaction);
+        map.put("notification", notification);
+        map.put("transaction", transaction);
         return map;
 
       }
-    }
-    else {
+    } else {
       System.out.println("No match found");
     }
     return null;
