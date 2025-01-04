@@ -4,6 +4,7 @@ import code.model.request.LoginRequest;
 import code.security.CustomUserDetails;
 import code.security.CustomUserDetailsService;
 import code.security.JwtTokenUtil;
+import code.service.more.TokenService;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +31,9 @@ public class LoginController {
   @Autowired
   private CustomUserDetailsService customUserDetailsService;
 
+  @Autowired
+  private TokenService tokenService;
+
   @PostMapping("/login")
   public ResponseEntity<Object> login(@RequestBody LoginRequest loginRequest)
       throws BadRequestException {
@@ -47,12 +51,15 @@ public class LoginController {
       long userId = customUserDetails.getUser().getId();
       //Gen token
       String token = jwtTokenUtil.generateToken(loginRequest.getEmail(),
-          customUserDetails.getUser().getRole(), name,userId);
+          customUserDetails.getUser().getRole(), name, userId);
       Map<String, String> response = new HashMap<>();
+      tokenService.saveToken(token,userId);
       response.put("token", token);
       return ResponseEntity.ok(response);
     } catch (Exception ex) {
       throw new BadRequestException("Email hoặc mật khẩu không chính xác!");
     }
   }
+
+
 }

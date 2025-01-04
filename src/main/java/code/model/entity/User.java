@@ -1,6 +1,5 @@
 package code.model.entity;
 
-import code.model.more.AccessToken;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;

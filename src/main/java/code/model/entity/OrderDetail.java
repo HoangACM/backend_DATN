@@ -57,8 +57,8 @@ public class OrderDetail {
 //  0 : Đã hủy
 
 //  cus : 1->0(hủy đơn),đ1->2(KH ã thanh toán xong)
-//  4->5(muốn trả lại đồ), 7->8(KH đã thanh toán phí phạt hoặc không thì sẽ là xác nhận hoàn tất)
-//  admin : 3->2->4, 5->6
+//  4->5(muốn trả lại đồ)
+//  admin : 3->2->4, 5->6->7->8
 
 
   @Column(name = "created_at",nullable = false)

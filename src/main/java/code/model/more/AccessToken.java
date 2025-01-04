@@ -16,7 +16,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 @Getter
 public class AccessToken {
   @Id
-  @Column(name = "id", length = 100) // Đặt độ dài cho cột ID
+  @Column(name = "id") // Đặt độ dài cho cột ID
   private String id;
 
   @CreationTimestamp
@@ -27,7 +27,6 @@ public class AccessToken {
   @Column(name = "updated_at",nullable = false)
   private LocalDateTime updated_at;
 
-  @CreationTimestamp
   @Column(name = "expires_at",nullable = false)
   private LocalDateTime expires_at;
 

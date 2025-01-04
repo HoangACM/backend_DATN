@@ -2,6 +2,7 @@ package code.security;
 
 import code.exception.ErrorResponse;
 import code.exception.ForbiddenException;
+import code.service.more.TokenService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -37,6 +38,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
   private String apiKeyConfig;
 
   private static final Logger logger = LoggerFactory.getLogger(JwtRequestFilter.class);
+
+  @Autowired
+  private TokenService tokenService;
 
   @Override
   protected void doFilterInternal(HttpServletRequest request,
@@ -91,6 +95,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
           UserDetails userDetails = this.customUserDetailsService.loadUserByUsername(username);
 
           // Xác thực token
+          if(!tokenService.checkValid(token)){
+            throw new ForbiddenException("Token revoked");
+          }
           if (jwtTokenUtil.validateToken(token, userDetails.getUsername())) {
             UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(

@@ -9,6 +9,7 @@ import code.model.request.UpdateCustomerRequest;
 import code.security.CustomUserDetails;
 import code.service.customer.AddressService;
 import code.service.customer.UserService;
+import code.service.more.TokenService;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -22,10 +23,18 @@ public class InformationController {
 
   private UserService userService;
   private AddressService addressService;
+  private TokenService tokenService;
 
-  public InformationController(UserService userService, AddressService addressService) {
+  public InformationController(UserService userService, AddressService addressService,
+      TokenService tokenService) {
     this.userService = userService;
+    this.tokenService = tokenService;
     this.addressService = addressService;
+  }
+
+  @PostMapping("/logout")
+  public ResponseEntity<?> logout(@RequestParam String token) {
+    return ResponseEntity.ok(tokenService.revokeToken(token));
   }
 
   @GetMapping("/profile")
@@ -38,7 +47,7 @@ public class InformationController {
   public ResponseEntity<?> updateCustomerInfo(@AuthenticationPrincipal CustomUserDetails userDetail,
       @RequestBody UpdateCustomerRequest request) {
     User user = userDetail.getUser();
-    CustomerInfoDTO customerInfoDTO = userService.updateCustomerInfo(request,user);
+    CustomerInfoDTO customerInfoDTO = userService.updateCustomerInfo(request, user);
     return ResponseEntity.ok(customerInfoDTO);
   }
 
@@ -46,7 +55,7 @@ public class InformationController {
   public ResponseEntity<?> changePassword(@AuthenticationPrincipal CustomUserDetails userDetail,
       @RequestBody ChangePasswordRequest changePasswordRequest) {
     User user = userDetail.getUser();
-    String status = userService.changePassword(changePasswordRequest,user);
+    String status = userService.changePassword(changePasswordRequest, user);
     return ResponseEntity.ok(status);
   }
 
@@ -57,14 +66,17 @@ public class InformationController {
   }
 
   @GetMapping("/addresses/{addressId}")
-  public ResponseEntity<?> getAddressByAddressId(@AuthenticationPrincipal CustomUserDetails userDetail,@PathVariable long addressId) {
+  public ResponseEntity<?> getAddressByAddressId(
+      @AuthenticationPrincipal CustomUserDetails userDetail, @PathVariable long addressId) {
     return ResponseEntity.ok(addressService.getAddressById(userDetail.getUser(), addressId));
   }
 
   @PutMapping("/addresses/{addressId}")
-  public ResponseEntity<?> updateAddressByAddressId(@AuthenticationPrincipal CustomUserDetails userDetail,
+  public ResponseEntity<?> updateAddressByAddressId(
+      @AuthenticationPrincipal CustomUserDetails userDetail,
       @PathVariable long addressId, @RequestBody CreateAddressRequest request) {
-    return ResponseEntity.ok(addressService.updateAddress(userDetail.getUser(), addressId, request));
+    return ResponseEntity.ok(
+        addressService.updateAddress(userDetail.getUser(), addressId, request));
   }
 
   @PostMapping("/addresses")
