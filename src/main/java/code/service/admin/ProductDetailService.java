@@ -5,9 +5,11 @@ import code.exception.NotFoundException;
 import code.model.entity.Product;
 import code.model.entity.ProductDetail;
 import code.model.request.CreateProductDetailRequest;
+import code.model.request.UpdateProductDetailRequest;
 import code.repository.CategoryRepository;
 import code.repository.ProductDetailRepository;
 import code.repository.ProductRepository;
+import org.springframework.beans.BeanUtils;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -53,5 +55,19 @@ public class ProductDetailService {
       productDetail.setStatus(true);
       return productDetailRepository.save(productDetail);
     }
+
+  public ProductDetail updateProductDetail(UpdateProductDetailRequest request, long productDetailId) {
+    try {
+      ProductDetail productDetail = productDetailRepository.findById(productDetailId)
+          .orElseThrow(() -> new NotFoundException("Không tìm thấy ProductDetail có id : " + productDetailId));
+      BeanUtils.copyProperties(request, productDetail);
+      return productDetailRepository.save(productDetail);
+    } catch (org.springframework.dao.DataIntegrityViolationException e) {
+      throw new ConflictException("Đã tồn tại Type và Color");
+    } catch (NotFoundException e) {
+      throw e; // Giữ lại ngoại lệ này vì nó đã được định nghĩa đúng
+    }
+  }
+
   }
 
