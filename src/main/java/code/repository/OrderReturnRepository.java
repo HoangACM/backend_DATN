@@ -1,6 +1,7 @@
 package code.repository;
 
 import code.model.entity.OrderReturn;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,4 +21,22 @@ public interface OrderReturnRepository extends JpaRepository<OrderReturn,Long> {
         WHERE u.id = :userId
     """)
   Page<OrderReturn> findAllByUserId(@Param("userId") Long userId, Pageable pageable);
+
+  @Query("SELECT SUM(od.currentPrice - orr.damageOrLossFee - orr.overdueFee) " +
+      "FROM OrderReturn orr " +
+      "JOIN orr.orderDetail od " +
+      "WHERE orr.isPaid = true " +
+      "AND orr.createdAt BETWEEN :startDate AND :endDate")
+  Long calculateTotalAmountInDateRange(@Param("startDate") LocalDateTime startDate,
+      @Param("endDate") LocalDateTime endDate);
+
+  @Query("SELECT MONTH(orr.createdAt) AS month, " +
+      "SUM(od.currentPrice - orr.damageOrLossFee - orr.overdueFee) AS total " +
+      "FROM OrderReturn orr " +
+      "JOIN orr.orderDetail od " +
+      "WHERE orr.isPaid = true " +
+      "AND YEAR(orr.createdAt) = :year " +
+      "GROUP BY MONTH(orr.createdAt) " +
+      "ORDER BY MONTH(orr.createdAt)")
+  List<Object[]> calculateMonthlyRevenueForYear(@Param("year") int year);
 }

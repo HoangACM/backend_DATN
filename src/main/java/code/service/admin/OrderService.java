@@ -120,6 +120,19 @@ public class OrderService {
       }
     }
 
+//    cập nhật đơn hàng thành công sau khi hoàn tiền lại cho khách
+    if (status == 8) {
+      if (orderDetail.getStatus() == 7) {
+        orderDetail.setStatus(8);
+        orderDetailRepository.save(orderDetail);
+        OrderReturn orderReturn = orderDetail.getOrderReturn();
+        orderReturn.setPaid(true);
+        orderReturnRepository.save(orderReturn);
+      } else {
+        throw new BadRequestException("Không thể chuyển trạng thái");
+      }
+    }
+
     Order order = orderDetail.getOrder();
     User user = order.getUser();
     Map<String, Object> response = new HashMap<>();

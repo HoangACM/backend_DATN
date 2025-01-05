@@ -68,13 +68,13 @@ public class WebSocketController {
   }
 
   // 6. Đã nhận lại sản phẩm thành công và kiểm tra
-  // 7. Thông báo OrderReturn cho khách để nếu có mất phí khách biết
+  // 7. Thông báo OrderReturn cho khách
   public void newOrderReturn(long customerId, Object obj) {
     String destination = "/customer/" + customerId + "/order/return";
     messagingTemplate.convertAndSend(destination, obj);
   }
 
-  // 8. Khách hàng đã thanh toán phụ phí thành công
+  // 8. Hoàn phí lại cho KH thành công
 //  8.1 Thông báo cho admin
   public void customerPayFeeSuccessForadmin(Object obj) {
     String destination = "/admin/fee/paySuccess";

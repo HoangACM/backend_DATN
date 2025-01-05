@@ -23,29 +23,5 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
       @Param("year") int year,
       @Param("x") int x);
 
-  @Query("SELECT SUM(t.transferAmount) FROM Transaction t " +
-      "JOIN Order o ON o.id = CAST(SUBSTRING(t.content, " +
-      "LOCATE('DH', t.content) + 2, LENGTH(t.content)) AS LONG) " + // Trích xuất orderId từ content
-      "JOIN o.orderDetails od " +
-      "JOIN od.productDetail pd " +
-      "JOIN pd.product p " +
-      "JOIN p.category c " +
-      "WHERE c.id = :categoryId " +
-      "AND t.transactionDate BETWEEN :startDate AND :endDate")
-  Long findTotalTransferAmountByCategoryAndDateRange(
-      Long categoryId, LocalDateTime startDate, LocalDateTime endDate);
-
-  @Query("""
-        SELECT 
-            COALESCE(SUM(CASE WHEN t.transferType = 'in' THEN t.transferAmount ELSE 0 END), 0) 
-            - 
-            COALESCE(SUM(CASE WHEN t.transferType = 'out' THEN t.transferAmount ELSE 0 END), 0) 
-        FROM Transaction t 
-        WHERE t.transactionDate BETWEEN :startDate AND :endDate
-    """)
-  Long calculateRevenueBetweenDates(
-      @Param("startDate") LocalDateTime startDate,
-      @Param("endDate") LocalDateTime endDate
-  );
 
 }

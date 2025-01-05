@@ -94,29 +94,29 @@ public class TransactionService {
         return map;
 
       }
-      if (typePayment == 2) {
-        long customerId = Long.parseLong(matcher.group(2));
-        long orderDetailId = Long.parseLong(matcher.group(3));
-        OrderDetail orderDetail = orderDetailRepository.findById(orderDetailId)
-            .orElseThrow(
-                () -> new NotFoundException("Không tìm thấy OrderDetail có id : " + orderDetailId));
-        orderDetail.setStatus(8);
-        OrderReturn orderReturn = orderDetail.getOrderReturn();
-        orderReturn.setPaid(true);
-        orderDetailRepository.save(orderDetail);
-        orderReturnRepository.save(orderReturn);
-
-        notification.setOrderId(orderDetailId);
-        notification.setRoleReceive("admin");
-        notification.setContent("Đơn hàng " + orderDetailId + " đã được hoàn tiênf cho khách");
-        notification.setUserReceiveId(0);
-        notification.setStatus(false);
-        notificationRepository.save(notification);
-        map.put("notification", notification);
-        map.put("transaction", transaction);
-        return map;
-
-      }
+//      if (typePayment == 2) {
+//        long customerId = Long.parseLong(matcher.group(2));
+//        long orderDetailId = Long.parseLong(matcher.group(3));
+//        OrderDetail orderDetail = orderDetailRepository.findById(orderDetailId)
+//            .orElseThrow(
+//                () -> new NotFoundException("Không tìm thấy OrderDetail có id : " + orderDetailId));
+//        orderDetail.setStatus(8);
+//        OrderReturn orderReturn = orderDetail.getOrderReturn();
+//        orderReturn.setPaid(true);
+//        orderDetailRepository.save(orderDetail);
+//        orderReturnRepository.save(orderReturn);
+//
+//        notification.setOrderId(orderDetailId);
+//        notification.setRoleReceive("admin");
+//        notification.setContent("Đơn hàng " + orderDetailId + " đã được hoàn tiênf cho khách");
+//        notification.setUserReceiveId(0);
+//        notification.setStatus(false);
+//        notificationRepository.save(notification);
+//        map.put("notification", notification);
+//        map.put("transaction", transaction);
+//        return map;
+//
+//      }
     } else {
       System.out.println("No match found");
     }

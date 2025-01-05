@@ -4,6 +4,7 @@ import code.exception.NotFoundException;
 import code.model.more.Transaction;
 import code.repository.CategoryRepository;
 import code.repository.OrderRepository;
+import code.repository.OrderReturnRepository;
 import code.repository.ProductRepository;
 import code.repository.TransactionRepository;
 import code.repository.UserRepository;
@@ -25,8 +26,10 @@ public class StatService {
   private CategoryRepository categoryRepository;
   private OrderRepository orderRepository;
   private ProductRepository productRepository;
+  private OrderReturnRepository orderReturnRepository;
 
   public StatService(TransactionRepository transactionRepository,
+      OrderReturnRepository orderReturnRepository,
       CategoryRepository categoryRepository,
       OrderRepository orderRepository,
       ProductRepository productRepository,
@@ -36,6 +39,7 @@ public class StatService {
     this.categoryRepository = categoryRepository;
     this.orderRepository = orderRepository;
     this.productRepository = productRepository;
+    this.orderReturnRepository = orderReturnRepository;
   }
 
   //  Lấy toàn bộ các giao dịch
@@ -71,15 +75,25 @@ public class StatService {
     return map;
   }
 
-  //  Thống kê doanh thu theo khoảng thười gian
+  //  Thống kê doanh thu theo khoảng thười gian dựa trên hóa đơn OrderDetail
   public Long calculateRevenue(LocalDateTime startDate, LocalDateTime endDate) {
-    return transactionRepository.calculateRevenueBetweenDates(startDate, endDate);
+    System.out.println("So tien la : "+orderReturnRepository.calculateTotalAmountInDateRange(startDate,endDate));
+    return orderReturnRepository.calculateTotalAmountInDateRange(startDate,endDate);
   }
 
   //  Thống kê doanh thu theo năm của danh mục
-  public long statRevenueByCategoryIdAndYear(long categoryId, LocalDateTime startDate,
-      LocalDateTime endDate) {
-    return transactionRepository.findTotalTransferAmountByCategoryAndDateRange(categoryId,
-        startDate, endDate );
+  public Map<Integer, Long> getMonthlyRevenueForYear(int year) {
+    // Lấy dữ liệu thô từ repository
+    List<Object[]> rawResults = orderReturnRepository.calculateMonthlyRevenueForYear(year);
+
+    // Xử lý dữ liệu thô thành Map
+    Map<Integer, Long> monthlyRevenue = new HashMap<>();
+    for (Object[] result : rawResults) {
+      Integer month = (Integer) result[0]; // Tháng
+      Long total = (Long) result[1];       // Tổng doanh thu
+      monthlyRevenue.put(month, total);
+    }
+
+    return monthlyRevenue;
   }
 }

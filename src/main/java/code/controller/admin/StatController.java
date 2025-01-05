@@ -2,6 +2,7 @@ package code.controller.admin;
 
 import code.service.admin.StatService;
 import java.time.LocalDateTime;
+import java.util.Map;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -63,13 +64,10 @@ public class StatController {
     return ResponseEntity.ok(revenue);
   }
 
-  //  Thống kê doanh thu theo danh mục
-//  @GetMapping("/stat/categories/{categoryId}/revenue")
-//  public ResponseEntity<?> statRevenueByYearAndCategory(
-//      @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
-//      @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
-//      @PathVariable long categoryId) {
-//    return ResponseEntity.ok(
-//        statService.statRevenueByCategoryIdAndYear(categoryId, startDate, endDate));
-//  }
+  //  Thống kê doanh thu theo năm
+  @GetMapping("/stat/monthly-revenue")
+  public ResponseEntity<?> getMonthlyRevenue(@RequestParam("year") int year) {
+    Map<Integer, Long> monthlyRevenue = statService.getMonthlyRevenueForYear(year);
+    return ResponseEntity.ok(monthlyRevenue);
+  }
 }
