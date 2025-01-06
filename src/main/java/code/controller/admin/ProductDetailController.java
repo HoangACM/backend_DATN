@@ -4,8 +4,10 @@ import code.model.entity.ProductDetail;
 import code.model.request.CreateProductDetailRequest;
 import code.model.request.UpdateProductDetailRequest;
 import code.service.admin.ProductDetailService;
+import java.io.IOException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 
 @RestController("adminProductDetailController")
@@ -44,5 +46,10 @@ public class ProductDetailController {
     return ResponseEntity.ok(this.productDetailService.updateProductDetail(request,productDetailId));
   }
 //  Thêm ảnh cho biến thể
-
+  @PutMapping("/product_details/{productDetailId}/image")
+  public ResponseEntity<ProductDetail> updateImageProductDetailById(
+      @PathVariable long productDetailId,
+      @RequestParam MultipartFile file) throws IOException {
+    return ResponseEntity.ok(this.productDetailService.updateImageProductDetail(file,productDetailId));
+  }
 }

@@ -80,4 +80,5 @@ public class ProductDetail {
     this.color = color;
     this.status = status;
   }
+
 }
