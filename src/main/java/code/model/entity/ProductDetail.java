@@ -47,7 +47,7 @@ public class ProductDetail {
 
   @OneToOne(cascade = CascadeType.ALL)
   @JoinColumn(name = "image_id", referencedColumnName = "id")
-  private Image image;
+  private Image image = this.product.getThumbnail();
 
   @Column(name = "created_at", nullable = false)
   @CreationTimestamp

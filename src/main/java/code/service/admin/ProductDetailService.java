@@ -69,5 +69,6 @@ public class ProductDetailService {
     }
   }
 
+//  Thêm ảnh cho biến thể
   }
 

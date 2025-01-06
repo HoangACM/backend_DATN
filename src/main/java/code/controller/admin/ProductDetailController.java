@@ -43,4 +43,6 @@ public class ProductDetailController {
       @RequestBody UpdateProductDetailRequest request){
     return ResponseEntity.ok(this.productDetailService.updateProductDetail(request,productDetailId));
   }
+//  Thêm ảnh cho biến thể
+
 }
