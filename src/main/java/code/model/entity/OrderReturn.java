@@ -1,5 +1,6 @@
 package code.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -67,6 +68,7 @@ public class OrderReturn {
   @Column(name = "updated_at", nullable = false)
   private LocalDateTime updatedAt;
 
+  @JsonIgnore
   @OneToOne(cascade = CascadeType.ALL)
   @JoinColumn(name = "order_detail_id", referencedColumnName = "id")
   private OrderDetail orderDetail;

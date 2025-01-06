@@ -77,7 +77,7 @@ public class OrderDetail {
   @JoinColumn(name = "product_detail_id",nullable = false, foreignKey = @ForeignKey(name = "FK_PRODUCT-DETAIL_ORDER-DETAIL"))
   private ProductDetail productDetail;
 
-  @JsonIgnore
+//  @JsonIgnore
   @OneToOne(cascade = CascadeType.ALL)
   @JoinColumn(name = "order_return_id", referencedColumnName = "id")
   private OrderReturn orderReturn;
