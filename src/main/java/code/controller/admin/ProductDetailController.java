@@ -33,6 +33,11 @@ public class ProductDetailController {
     return ResponseEntity.ok(this.productDetailService.createProductDetail(createProductDetailRequest));
   }
 
+//  @PostMapping("/products/{productId}/product_details")
+//  public ResponseEntity<ProductDetail> createProductDetail1(@RequestBody CreateProductDetailRequest createProductDetailRequest){
+//    return ResponseEntity.ok(this.productDetailService.createProductDetail(createProductDetailRequest));
+//  }
+
   @PutMapping("/product_details/{productDetailId}")
   public ResponseEntity<ProductDetail> updateProductDetailById(@PathVariable long productDetailId,
       @RequestBody UpdateProductDetailRequest request){

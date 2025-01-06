@@ -70,8 +70,7 @@ public class TransactionService {
         Order order = orderRepository.findById(orderId)
             .orElseThrow(() -> new NotFoundException("Không tìm thấy Order có id : " + orderId));
         for (OrderDetail orderDetail : order.getOrderDetails()) {
-          totalPayment +=
-              orderDetail.getCurrentPrice();
+          totalPayment = totalPayment + orderDetail.getCurrentPrice() + orderDetail.getCurrentDeposit();
         }
         if (totalPayment != request.getTransferAmount()) {
           throw new BadRequestException(

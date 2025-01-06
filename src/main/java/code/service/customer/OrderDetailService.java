@@ -131,11 +131,11 @@ public class OrderDetailService {
       OrderDetail orderDetail = new OrderDetail();
       orderDetail.setStartDate(productItem.getStartDate());
       orderDetail.setRentalDay(productItem.getRentalDay());
-      orderDetail.setCurrentDeposit(productDetail.getDeposit());
-      orderDetail.setCurrentPrice(
-          productDetail.getPrice() * productItem.getRentalDay() * productItem.getQuantity()
-              + productDetail.getDeposit());
 
+      orderDetail.setCurrentDeposit(productDetail.getDeposit() * productItem.getQuantity());
+
+      orderDetail.setCurrentPrice(
+          productDetail.getPrice() * productItem.getRentalDay() * productItem.getQuantity());
       //      Check số lượng đặt hàng với số trong kho
       if (productDetail.getInventory() < productItem.getQuantity()) {
         throw new BadRequestException("Số lượng quá giới hạn");
