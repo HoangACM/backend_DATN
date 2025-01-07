@@ -1,8 +1,10 @@
 package code.service.admin;
 
 import code.exception.*;
+import code.model.dto.ProductDTO;
 import code.model.entity.Category;
 import code.model.entity.Product;
+import code.model.entity.ProductDetail;
 import code.model.more.Image;
 import code.model.request.CreateProductRequest;
 import code.model.request.UpdateProductRequest;
@@ -18,6 +20,7 @@ import java.text.Normalizer;
 import java.time.Instant;
 import java.util.regex.Pattern;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -97,6 +100,8 @@ public class ProductService {
     Pageable pageable = PageRequest.of(page, size);
     return this.productRepository.findAll(pageable);
   }
+//  Sap xep theo ban chay
+
 
   public Product getProductById(long product_id) {
     return this.productRepository.findById(product_id)

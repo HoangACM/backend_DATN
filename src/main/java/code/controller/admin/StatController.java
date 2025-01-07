@@ -71,6 +71,12 @@ public class StatController {
     return ResponseEntity.ok(monthlyRevenue);
   }
 
-//  Thống kê sản phẩm thuê nhiều
+  //  Thống kê sản phẩm thuê nhiều : sap xep
+  @GetMapping("/products/sort")
+  public ResponseEntity<?> getProductsAndSort(
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size) {
+    return ResponseEntity.ok(this.statService.getProductDTOsAndSort(page, size));
+  }
 
 }
