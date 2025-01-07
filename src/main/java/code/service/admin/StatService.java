@@ -150,12 +150,10 @@ public class StatService {
   }
 
 //  Thong ke ban chay theo danh muc cua tat ca thoi gian
-  public Map<Map,Long> statHiredByCategory(){
-    Map<Map,Long> data = new HashMap<>();
+  public Map<String,Long> statHiredByCategory(){
+    Map<String,Long> data = new HashMap<>();
     for(Category category : categoryRepository.findAll()){
-      Map<Long,String> categoryDTO = new HashMap<>();
-      categoryDTO.put(category.getId(),category.getName());
-      data.put(categoryDTO,categoryRepository.calculateTotalRentCountForCategory(category.getId()));
+      data.put(category.getName(),categoryRepository.calculateTotalRentCountForCategory(category.getId()));
     }
     return data;
   }

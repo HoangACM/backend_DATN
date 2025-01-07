@@ -83,7 +83,7 @@ public class StatController {
   //  Thong ke so luot thue theo dnah muc
   @GetMapping("/stat/categories")
   public ResponseEntity<?> getHiredByCategory() {
-    Map<Map, Long> monthlyRevenue = statService.statHiredByCategory();
+    Map<String, Long> monthlyRevenue = statService.statHiredByCategory();
     return ResponseEntity.ok(monthlyRevenue);
   }
 }
