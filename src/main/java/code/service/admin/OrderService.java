@@ -40,9 +40,10 @@ public class OrderService {
 
   //  Lấy tất cả đơn hàng
   public Page<OrderDetail> getOrderDetails(int page, int size) {
-    Pageable pageable = PageRequest.of(page, size);
+    Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
     return orderDetailRepository.findAll(pageable);
   }
+
 
   //  Lấy các đơn hàng theo thời gian
   public Page<OrderDetail> getOrderDetailsByTime(int page, int size, LocalDateTime startDate,
