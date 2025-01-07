@@ -70,4 +70,7 @@ public class StatController {
     Map<Integer, Long> monthlyRevenue = statService.getMonthlyRevenueForYear(year);
     return ResponseEntity.ok(monthlyRevenue);
   }
+
+//  Thống kê sản phẩm thuê nhiều
+
 }

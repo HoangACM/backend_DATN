@@ -55,8 +55,7 @@ public class ProductService {
         }
       }
 //      Tính số lượt đã thuê
-
-//      Tính số sao đánh giá
+        productDTO.setHired(productRepository.totalHired(product.getProductDetails()));
 
       productDTOs.add(productDTO);
     }

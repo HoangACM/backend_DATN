@@ -77,11 +77,13 @@ public class StatService {
 
   //  Thống kê doanh thu theo khoảng thười gian dựa trên hóa đơn OrderDetail
   public Long calculateRevenue(LocalDateTime startDate, LocalDateTime endDate) {
-    System.out.println("So tien la : "+orderReturnRepository.calculateTotalAmountInDateRange(startDate,endDate));
-    return orderReturnRepository.calculateTotalAmountInDateRange(startDate,endDate);
+    System.out.println(
+        "So tien la : " + orderReturnRepository.calculateTotalAmountInDateRange(startDate,
+            endDate));
+    return orderReturnRepository.calculateTotalAmountInDateRange(startDate, endDate);
   }
 
-  //  Thống kê doanh thu theo năm của danh mục
+  //  Thống kê doanh thu theo năm
   public Map<Integer, Long> getMonthlyRevenueForYear(int year) {
     // Lấy dữ liệu thô từ repository
     List<Object[]> rawResults = orderReturnRepository.calculateMonthlyRevenueForYear(year);
@@ -93,7 +95,8 @@ public class StatService {
       Long total = (Long) result[1];       // Tổng doanh thu
       monthlyRevenue.put(month, total);
     }
-
     return monthlyRevenue;
   }
+//Thong ke san pham ban chay
+
 }
