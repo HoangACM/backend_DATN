@@ -13,15 +13,16 @@ public interface CategoryRepository extends JpaRepository<Category,Long> {
   Optional<Category> findByName(String category_name) ;
 
   @Query("""
-    SELECT COALESCE(SUM(COUNT(od)), 0)
-    FROM Category c
-    JOIN c.products p
-    JOIN p.productDetails pd
-    JOIN OrderDetail od ON pd.id = od.productDetail.id
+    SELECT COUNT(od)
+    FROM OrderDetail od
+    JOIN od.productDetail pd
+    JOIN pd.product p
+    JOIN p.category c
     WHERE c.id = :categoryId AND od.status = 8
-    GROUP BY c.id
     """)
   Long calculateTotalRentCountForCategory(@Param("categoryId") Long categoryId);
+
+
 
 
 }
