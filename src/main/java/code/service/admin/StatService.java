@@ -151,9 +151,9 @@ public class StatService {
 
 //  Thong ke ban chay theo danh muc cua tat ca thoi gian
   public Map<Map,Long> statHiredByCategory(){
-    Map<Long,String> categoryDTO = new HashMap<>();
     Map<Map,Long> data = new HashMap<>();
     for(Category category : categoryRepository.findAll()){
+      Map<Long,String> categoryDTO = new HashMap<>();
       categoryDTO.put(category.getId(),category.getName());
       data.put(categoryDTO,categoryRepository.calculateTotalRentCountForCategory(category.getId()));
     }
