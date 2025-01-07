@@ -2,6 +2,7 @@ package code.service.admin;
 
 import code.exception.NotFoundException;
 import code.model.dto.ProductDTO;
+import code.model.entity.Category;
 import code.model.entity.Product;
 import code.model.entity.ProductDetail;
 import code.model.more.Transaction;
@@ -83,9 +84,6 @@ public class StatService {
 
   //  Thống kê doanh thu theo khoảng thười gian dựa trên hóa đơn OrderDetail
   public Long calculateRevenue(LocalDateTime startDate, LocalDateTime endDate) {
-    System.out.println(
-        "So tien la : " + orderReturnRepository.calculateTotalAmountInDateRange(startDate,
-            endDate));
     return orderReturnRepository.calculateTotalAmountInDateRange(startDate, endDate);
   }
 
@@ -104,7 +102,6 @@ public class StatService {
     return monthlyRevenue;
   }
 //Thong ke san pham ban chay
-
   private List<ProductDTO> convert(List<Product> products) {
     List<ProductDTO> productDTOs = new ArrayList<>();
     for (Product product : products) {
@@ -150,5 +147,14 @@ public class StatService {
 
     // Trả về Page<ProductDTO>
     return new PageImpl<>(paginatedDTOs, pageable, productDTOs.size());
+  }
+
+//  Thong ke ban chay theo danh muc cua tat ca thoi gian
+  public Map<Category,Long> statHiredByCategory(){
+    Map<Category,Long> data = new HashMap<>();
+    for(Category category : categoryRepository.findAll()){
+      data.put(category,categoryRepository.calculateTotalRentCountForCategory(category.getId()));
+    }
+    return data;
   }
 }

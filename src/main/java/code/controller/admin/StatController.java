@@ -1,5 +1,6 @@
 package code.controller.admin;
 
+import code.model.entity.Category;
 import code.service.admin.StatService;
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -79,4 +80,10 @@ public class StatController {
     return ResponseEntity.ok(this.statService.getProductDTOsAndSort(page, size));
   }
 
+  //  Thong ke so luot thue theo dnah muc
+  @GetMapping("/stat/categories")
+  public ResponseEntity<?> getHiredByCategory() {
+    Map<Category, Long> monthlyRevenue = statService.statHiredByCategory();
+    return ResponseEntity.ok(monthlyRevenue);
+  }
 }
