@@ -25,7 +25,13 @@ public class ProductController {
       @RequestParam(defaultValue = "10") int size) {
     return ResponseEntity.ok(this.productService.getProductDTOs(page, size));
   }
-
+// sap xep theo luot mua
+  @GetMapping("/products/sort")
+  public ResponseEntity<?> getProductsAndSort(
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size) {
+    return ResponseEntity.ok(this.productService.getProductDTOsAndSort(page, size));
+  }
   //  Lấy tất cả các product theo danh mục
   @GetMapping("/categories/{categoryId}/products")
   public ResponseEntity<?> getProductsByCategory(
