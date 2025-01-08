@@ -30,13 +30,33 @@ public interface OrderReturnRepository extends JpaRepository<OrderReturn,Long> {
   Long calculateTotalAmountInDateRange(@Param("startDate") LocalDateTime startDate,
       @Param("endDate") LocalDateTime endDate);
 
-  @Query("SELECT MONTH(orr.createdAt) AS month, " +
-      "SUM(od.currentPrice - orr.damageOrLossFee - orr.overdueFee) AS total " +
-      "FROM OrderReturn orr " +
-      "JOIN orr.orderDetail od " +
-      "WHERE orr.isPaid = true " +
-      "AND YEAR(orr.createdAt) = :year " +
-      "GROUP BY MONTH(orr.createdAt) " +
-      "ORDER BY MONTH(orr.createdAt)")
+  @Query(value = """
+    WITH months AS (
+        SELECT 1 AS month UNION ALL
+        SELECT 2 UNION ALL
+        SELECT 3 UNION ALL
+        SELECT 4 UNION ALL
+        SELECT 5 UNION ALL
+        SELECT 6 UNION ALL
+        SELECT 7 UNION ALL
+        SELECT 8 UNION ALL
+        SELECT 9 UNION ALL
+        SELECT 10 UNION ALL
+        SELECT 11 UNION ALL
+        SELECT 12
+    )
+    SELECT 
+        m.month, 
+        COALESCE(SUM(od.currentPrice - orr.damageOrLossFee - orr.overdueFee), 0) AS total
+    FROM 
+        months m
+    LEFT JOIN OrderReturn orr ON MONTH(orr.createdAt) = m.month AND YEAR(orr.createdAt) = :year AND orr.isPaid = true
+    LEFT JOIN orr.orderDetail od ON od.id = orr.orderDetail_id
+    GROUP BY 
+        m.month
+    ORDER BY 
+        m.month
+    """, nativeQuery = true)
   List<Object[]> calculateMonthlyRevenueForYear(@Param("year") int year);
+
 }
