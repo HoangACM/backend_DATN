@@ -96,11 +96,18 @@ public class StatService {
     Map<Integer, Long> monthlyRevenue = new HashMap<>();
     for (Object[] result : rawResults) {
       Integer month = (Integer) result[0]; // Tháng
-      Long total = (Long) result[1];       // Tổng doanh thu
+      Long total = result[1] != null ? ((Number) result[1]).longValue() : 0L; // Tổng doanh thu
       monthlyRevenue.put(month, total);
     }
+
+    // Lấp đầy các tháng thiếu với giá trị mặc định là 0
+    for (int i = 1; i <= 12; i++) {
+      monthlyRevenue.putIfAbsent(i, 0L);
+    }
+
     return monthlyRevenue;
   }
+
 //Thong ke san pham ban chay
   private List<ProductDTO> convert(List<Product> products) {
     List<ProductDTO> productDTOs = new ArrayList<>();
